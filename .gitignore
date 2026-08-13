@@ -1,0 +1,26 @@
+# Environment files
+.env
+.env.local
+.env*.local
+*.env
+
+# Dependencies & build outputs
+**/node_modules/
+**/.next/
+**/dist/
+**/build/
+**/__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# SQLite databases
+**/data/*.db
+*.db-wal
+*.db-shm
+
+# IDE & OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

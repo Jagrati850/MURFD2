@@ -1,0 +1,247 @@
+{
+  "_meta": {
+    "description": "OFFLINE FALLBACK ONLY. Hand-compiled list of well-known government district/tertiary hospitals used when the live OpenStreetMap Overpass API is unreachable. This is LOCAL data, not live, and is disclosed as such in the README. Coordinates are approximate district-centre coordinates.",
+    "data_type": "local",
+    "compiled_on": "2026-08-11",
+    "coverage": "24 major Indian cities/districts + national helplines"
+  },
+  "national_helplines": {
+    "emergency_all_services": "112",
+    "ambulance": "108",
+    "national_health_helpline": "1800-180-1104",
+    "covid_helpline": "1075",
+    "mental_health_tele_manas": "14416",
+    "women_helpline": "1091",
+    "child_helpline": "1098",
+    "blood_bank": "104"
+  },
+  "districts": {
+    "delhi": {
+      "display_name": "Delhi",
+      "lat": 28.6139,
+      "lon": 77.209,
+      "facilities": [
+        { "name": "All India Institute of Medical Sciences (AIIMS)", "type": "government tertiary hospital", "area": "Ansari Nagar" },
+        { "name": "Safdarjung Hospital", "type": "government hospital", "area": "Ansari Nagar West" },
+        { "name": "Lok Nayak Jai Prakash Narayan Hospital", "type": "government hospital", "area": "Jawaharlal Nehru Marg" },
+        { "name": "Ram Manohar Lohia Hospital", "type": "government hospital", "area": "Baba Kharak Singh Marg" }
+      ]
+    },
+    "mumbai": {
+      "display_name": "Mumbai",
+      "lat": 19.076,
+      "lon": 72.8777,
+      "facilities": [
+        { "name": "King Edward Memorial (KEM) Hospital", "type": "government hospital", "area": "Parel" },
+        { "name": "Sir J.J. Group of Hospitals", "type": "government hospital", "area": "Byculla" },
+        { "name": "Lokmanya Tilak Municipal General Hospital (Sion)", "type": "government hospital", "area": "Sion" },
+        { "name": "Tata Memorial Hospital", "type": "government cancer hospital", "area": "Parel" }
+      ]
+    },
+    "kolkata": {
+      "display_name": "Kolkata",
+      "lat": 22.5726,
+      "lon": 88.3639,
+      "facilities": [
+        { "name": "Medical College and Hospital Kolkata", "type": "government hospital", "area": "College Street" },
+        { "name": "SSKM Hospital (IPGMER)", "type": "government hospital", "area": "Bhowanipore" },
+        { "name": "R.G. Kar Medical College and Hospital", "type": "government hospital", "area": "Shyambazar" }
+      ]
+    },
+    "chennai": {
+      "display_name": "Chennai",
+      "lat": 13.0827,
+      "lon": 80.2707,
+      "facilities": [
+        { "name": "Rajiv Gandhi Government General Hospital", "type": "government hospital", "area": "Park Town" },
+        { "name": "Stanley Medical College Hospital", "type": "government hospital", "area": "Royapuram" },
+        { "name": "Institute of Child Health and Hospital for Children", "type": "government children's hospital", "area": "Egmore" }
+      ]
+    },
+    "bengaluru": {
+      "display_name": "Bengaluru",
+      "lat": 12.9716,
+      "lon": 77.5946,
+      "facilities": [
+        { "name": "Victoria Hospital", "type": "government hospital", "area": "Kalasipalya" },
+        { "name": "Bowring and Lady Curzon Hospital", "type": "government hospital", "area": "Shivajinagar" },
+        { "name": "NIMHANS", "type": "government mental health and neurosciences hospital", "area": "Hosur Road" }
+      ]
+    },
+    "hyderabad": {
+      "display_name": "Hyderabad",
+      "lat": 17.385,
+      "lon": 78.4867,
+      "facilities": [
+        { "name": "Osmania General Hospital", "type": "government hospital", "area": "Afzal Gunj" },
+        { "name": "Gandhi Hospital", "type": "government hospital", "area": "Secunderabad" },
+        { "name": "Nizam's Institute of Medical Sciences (NIMS)", "type": "government tertiary hospital", "area": "Punjagutta" }
+      ]
+    },
+    "pune": {
+      "display_name": "Pune",
+      "lat": 18.5204,
+      "lon": 73.8567,
+      "facilities": [
+        { "name": "Sassoon General Hospital", "type": "government hospital", "area": "Near Pune Station" },
+        { "name": "B.J. Government Medical College", "type": "government medical college hospital", "area": "Sassoon Road" }
+      ]
+    },
+    "ahmedabad": {
+      "display_name": "Ahmedabad",
+      "lat": 23.0225,
+      "lon": 72.5714,
+      "facilities": [
+        { "name": "Civil Hospital Ahmedabad", "type": "government hospital", "area": "Asarwa" },
+        { "name": "Sardar Vallabhbhai Patel Institute of Medical Sciences", "type": "government hospital", "area": "Ellisbridge" }
+      ]
+    },
+    "jaipur": {
+      "display_name": "Jaipur",
+      "lat": 26.9124,
+      "lon": 75.7873,
+      "facilities": [
+        { "name": "Sawai Man Singh (SMS) Hospital", "type": "government hospital", "area": "Jaipur" },
+        { "name": "Jaipuria Hospital", "type": "government hospital", "area": "Milap Nagar" }
+      ]
+    },
+    "lucknow": {
+      "display_name": "Lucknow",
+      "lat": 26.8467,
+      "lon": 80.9462,
+      "facilities": [
+        { "name": "King George's Medical University (KGMU)", "type": "government medical university hospital", "area": "Chowk" },
+        { "name": "Sanjay Gandhi Postgraduate Institute (SGPGI)", "type": "government tertiary hospital", "area": "Raebareli Road" },
+        { "name": "Dr. Ram Manohar Lohia Institute of Medical Sciences", "type": "government hospital", "area": "Gomti Nagar" }
+      ]
+    },
+    "kanpur": {
+      "display_name": "Kanpur",
+      "lat": 26.4499,
+      "lon": 80.3319,
+      "facilities": [
+        { "name": "Lala Lajpat Rai (Hallett) Hospital", "type": "government hospital", "area": "Swaroop Nagar" },
+        { "name": "Ursula Horsman Memorial Hospital", "type": "government hospital", "area": "Ursula" },
+        { "name": "Kanshi Ram Joint Hospital", "type": "government hospital", "area": "Jajmau" }
+      ]
+    },
+    "varanasi": {
+      "display_name": "Varanasi",
+      "lat": 25.3176,
+      "lon": 82.9739,
+      "facilities": [
+        { "name": "Sir Sunderlal Hospital, BHU", "type": "government hospital", "area": "BHU Campus" },
+        { "name": "Pandit Deendayal Upadhyay Government Hospital", "type": "government hospital", "area": "Pandeypur" }
+      ]
+    },
+    "patna": {
+      "display_name": "Patna",
+      "lat": 25.5941,
+      "lon": 85.1376,
+      "facilities": [
+        { "name": "Patna Medical College and Hospital", "type": "government hospital", "area": "Ashok Rajpath" },
+        { "name": "AIIMS Patna", "type": "government tertiary hospital", "area": "Phulwari Sharif" },
+        { "name": "Nalanda Medical College Hospital", "type": "government hospital", "area": "Kankarbagh" }
+      ]
+    },
+    "bhopal": {
+      "display_name": "Bhopal",
+      "lat": 23.2599,
+      "lon": 77.4126,
+      "facilities": [
+        { "name": "Hamidia Hospital", "type": "government hospital", "area": "Royal Market" },
+        { "name": "AIIMS Bhopal", "type": "government tertiary hospital", "area": "Saket Nagar" }
+      ]
+    },
+    "indore": {
+      "display_name": "Indore",
+      "lat": 22.7196,
+      "lon": 75.8577,
+      "facilities": [
+        { "name": "Maharaja Yeshwantrao (MY) Hospital", "type": "government hospital", "area": "Indore" },
+        { "name": "Government Chacha Nehru Children's Hospital", "type": "government children's hospital", "area": "Indore" }
+      ]
+    },
+    "nagpur": {
+      "display_name": "Nagpur",
+      "lat": 21.1458,
+      "lon": 79.0882,
+      "facilities": [
+        { "name": "Government Medical College and Hospital Nagpur", "type": "government hospital", "area": "Medical Square" },
+        { "name": "Indira Gandhi Government Medical College", "type": "government hospital", "area": "Mayo" }
+      ]
+    },
+    "chandigarh": {
+      "display_name": "Chandigarh",
+      "lat": 30.7333,
+      "lon": 76.7794,
+      "facilities": [
+        { "name": "Postgraduate Institute of Medical Education and Research (PGIMER)", "type": "government tertiary hospital", "area": "Sector 12" },
+        { "name": "Government Multi Speciality Hospital", "type": "government hospital", "area": "Sector 16" }
+      ]
+    },
+    "guwahati": {
+      "display_name": "Guwahati",
+      "lat": 26.1445,
+      "lon": 91.7362,
+      "facilities": [
+        { "name": "Gauhati Medical College and Hospital", "type": "government hospital", "area": "Bhangagarh" },
+        { "name": "Mahendra Mohan Choudhury Hospital", "type": "government hospital", "area": "Panbazar" }
+      ]
+    },
+    "thiruvananthapuram": {
+      "display_name": "Thiruvananthapuram",
+      "lat": 8.5241,
+      "lon": 76.9366,
+      "facilities": [
+        { "name": "Government Medical College Thiruvananthapuram", "type": "government hospital", "area": "Medical College" },
+        { "name": "Sree Chitra Tirunal Institute", "type": "government tertiary hospital", "area": "Thiruvananthapuram" }
+      ]
+    },
+    "bhubaneswar": {
+      "display_name": "Bhubaneswar",
+      "lat": 20.2961,
+      "lon": 85.8245,
+      "facilities": [
+        { "name": "Capital Hospital", "type": "government hospital", "area": "Unit 6" },
+        { "name": "AIIMS Bhubaneswar", "type": "government tertiary hospital", "area": "Sijua" }
+      ]
+    },
+    "ranchi": {
+      "display_name": "Ranchi",
+      "lat": 23.3441,
+      "lon": 85.3096,
+      "facilities": [
+        { "name": "Rajendra Institute of Medical Sciences (RIMS)", "type": "government tertiary hospital", "area": "Bariatu" },
+        { "name": "Sadar Hospital Ranchi", "type": "government district hospital", "area": "Purulia Road" }
+      ]
+    },
+    "raipur": {
+      "display_name": "Raipur",
+      "lat": 21.2514,
+      "lon": 81.6296,
+      "facilities": [
+        { "name": "Dr. Bhimrao Ambedkar Memorial Hospital", "type": "government hospital", "area": "Raipur" },
+        { "name": "AIIMS Raipur", "type": "government tertiary hospital", "area": "Tatibandh" }
+      ]
+    },
+    "amritsar": {
+      "display_name": "Amritsar",
+      "lat": 31.634,
+      "lon": 74.8723,
+      "facilities": [
+        { "name": "Guru Nanak Dev Hospital", "type": "government hospital", "area": "Circular Road" },
+        { "name": "Government Medical College Amritsar", "type": "government hospital", "area": "Amritsar" }
+      ]
+    },
+    "srinagar": {
+      "display_name": "Srinagar",
+      "lat": 34.0837,
+      "lon": 74.7973,
+      "facilities": [
+        { "name": "Sher-i-Kashmir Institute of Medical Sciences (SKIMS)", "type": "government tertiary hospital", "area": "Soura" },
+        { "name": "Shri Maharaja Hari Singh (SMHS) Hospital", "type": "government hospital", "area": "Karan Nagar" }
+      ]
+    }
+  }
+}

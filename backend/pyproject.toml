@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "health-access-voice-agent"
+version = "1.0.0"
+description = "Health Access Voice Agent with persistent memory — Day 4/5 of #VoiceForBharat Challenge"
+requires-python = ">=3.10, <3.15"
+
+dependencies = [
+    "livekit-agents[deepgram,google,silero,turn-detector]~=1.4",
+    "livekit-murf>=0.1.1",
+    "livekit-plugins-noise-cancellation~=0.2",
+    "python-dotenv",
+]
+
+[dependency-groups]
+dev = [
+    "pytest",
+    "pytest-asyncio",
+    "ruff",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+pythonpath = ["src"]
+testpaths = ["tests"]
+
+[tool.setuptools.packages.find]
+where = ["src"]

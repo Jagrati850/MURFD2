@@ -1,0 +1,175 @@
+{
+  "meta": {
+    "name": "Offline district health-facility fallback list",
+    "disclosure": "HAND-BUILT LOCAL DATASET, NOT LIVE DATA. This file is used only when the live OpenStreetMap lookup fails (no network, timeout, or Overpass error). It lists widely known government hospitals and medical-college hospitals by district, with area names only. Phone numbers and opening hours are deliberately omitted rather than guessed; the agent offers the national helplines instead and tells the user to confirm details before travelling.",
+    "compiled_on": "2026-08-11",
+    "coverage": "15 Indian districts / metro areas, government facilities only",
+    "live_source_it_replaces": "OpenStreetMap Nominatim + Overpass API",
+    "helplines_are_official": true
+  },
+  "districts": {
+    "varanasi": {
+      "district": "Varanasi",
+      "state": "Uttar Pradesh",
+      "aliases": ["banaras", "benares", "kashi"],
+      "facilities": [
+        { "name": "Sir Sunderlal Hospital, IMS-BHU", "category": "Government tertiary hospital", "area": "BHU campus, Lanka" },
+        { "name": "Pandit Deendayal Upadhyay Government Hospital", "category": "Government district hospital", "area": "Pandeypur" },
+        { "name": "SSPG Divisional Hospital (Kabir Chaura)", "category": "Government divisional hospital", "area": "Kabir Chaura" },
+        { "name": "Lal Bahadur Shastri Hospital", "category": "Government hospital", "area": "Ramnagar" }
+      ]
+    },
+    "lucknow": {
+      "district": "Lucknow",
+      "state": "Uttar Pradesh",
+      "aliases": ["lakhnau"],
+      "facilities": [
+        { "name": "King George's Medical University (KGMU) Trauma Centre", "category": "Government tertiary hospital", "area": "Chowk" },
+        { "name": "Sanjay Gandhi Postgraduate Institute of Medical Sciences", "category": "Government tertiary institute", "area": "Raebareli Road" },
+        { "name": "Dr. Ram Manohar Lohia Institute of Medical Sciences", "category": "Government tertiary institute", "area": "Gomti Nagar" },
+        { "name": "Balrampur Hospital", "category": "Government district hospital", "area": "Golaganj" }
+      ]
+    },
+    "prayagraj": {
+      "district": "Prayagraj",
+      "state": "Uttar Pradesh",
+      "aliases": ["allahabad"],
+      "facilities": [
+        { "name": "Swaroop Rani Nehru Hospital (MLN Medical College)", "category": "Government tertiary hospital", "area": "Colonelganj" },
+        { "name": "Tej Bahadur Sapru Hospital (Beli Hospital)", "category": "Government district hospital", "area": "Beli" },
+        { "name": "Dufferin Hospital", "category": "Government women's hospital", "area": "Chowk" }
+      ]
+    },
+    "gorakhpur": {
+      "district": "Gorakhpur",
+      "state": "Uttar Pradesh",
+      "aliases": [],
+      "facilities": [
+        { "name": "Baba Raghav Das Medical College Hospital", "category": "Government tertiary hospital", "area": "Medical College Road" },
+        { "name": "AIIMS Gorakhpur", "category": "Government tertiary institute", "area": "Kunraghat" },
+        { "name": "District Hospital Gorakhpur", "category": "Government district hospital", "area": "Civil Lines" }
+      ]
+    },
+    "delhi": {
+      "district": "Delhi",
+      "state": "Delhi",
+      "aliases": ["new delhi", "dilli", "ncr"],
+      "facilities": [
+        { "name": "All India Institute of Medical Sciences (AIIMS)", "category": "Government tertiary institute", "area": "Ansari Nagar" },
+        { "name": "Safdarjung Hospital", "category": "Government tertiary hospital", "area": "Ansari Nagar West" },
+        { "name": "Lok Nayak Hospital", "category": "Government tertiary hospital", "area": "Jawaharlal Nehru Marg" },
+        { "name": "Dr. Ram Manohar Lohia Hospital", "category": "Government tertiary hospital", "area": "Baba Kharak Singh Marg" },
+        { "name": "Guru Teg Bahadur Hospital", "category": "Government tertiary hospital", "area": "Dilshad Garden" }
+      ]
+    },
+    "mumbai": {
+      "district": "Mumbai",
+      "state": "Maharashtra",
+      "aliases": ["bombay", "navi mumbai", "thane"],
+      "facilities": [
+        { "name": "KEM Hospital", "category": "Government tertiary hospital", "area": "Parel" },
+        { "name": "Lokmanya Tilak (Sion) Hospital", "category": "Government tertiary hospital", "area": "Sion" },
+        { "name": "Sir J.J. Group of Hospitals", "category": "Government tertiary hospital", "area": "Byculla" },
+        { "name": "B.Y.L. Nair Charitable Hospital", "category": "Government tertiary hospital", "area": "Mumbai Central" }
+      ]
+    },
+    "pune": {
+      "district": "Pune",
+      "state": "Maharashtra",
+      "aliases": ["poona", "pimpri", "chinchwad"],
+      "facilities": [
+        { "name": "Sassoon General Hospital", "category": "Government tertiary hospital", "area": "Near Pune railway station" },
+        { "name": "Aundh District Hospital", "category": "Government district hospital", "area": "Aundh" },
+        { "name": "Kamla Nehru Hospital", "category": "Municipal hospital", "area": "Mangalwar Peth" },
+        { "name": "Yashwantrao Chavan Memorial Hospital", "category": "Municipal tertiary hospital", "area": "Pimpri" }
+      ]
+    },
+    "bengaluru": {
+      "district": "Bengaluru Urban",
+      "state": "Karnataka",
+      "aliases": ["bangalore", "bengaluru"],
+      "facilities": [
+        { "name": "Victoria Hospital (BMCRI)", "category": "Government tertiary hospital", "area": "Kalasipalya" },
+        { "name": "Bowring and Lady Curzon Hospital", "category": "Government tertiary hospital", "area": "Shivajinagar" },
+        { "name": "NIMHANS", "category": "Government mental health and neuro institute", "area": "Hosur Road" },
+        { "name": "K.C. General Hospital", "category": "Government district hospital", "area": "Malleswaram" }
+      ]
+    },
+    "chennai": {
+      "district": "Chennai",
+      "state": "Tamil Nadu",
+      "aliases": ["madras"],
+      "facilities": [
+        { "name": "Rajiv Gandhi Government General Hospital", "category": "Government tertiary hospital", "area": "Park Town" },
+        { "name": "Government Stanley Medical College Hospital", "category": "Government tertiary hospital", "area": "Royapuram" },
+        { "name": "Government Kilpauk Medical College Hospital", "category": "Government tertiary hospital", "area": "Kilpauk" },
+        { "name": "Institute of Child Health and Hospital for Children", "category": "Government children's hospital", "area": "Egmore" }
+      ]
+    },
+    "hyderabad": {
+      "district": "Hyderabad",
+      "state": "Telangana",
+      "aliases": ["secunderabad"],
+      "facilities": [
+        { "name": "Osmania General Hospital", "category": "Government tertiary hospital", "area": "Afzal Gunj" },
+        { "name": "Gandhi Hospital", "category": "Government tertiary hospital", "area": "Secunderabad" },
+        { "name": "Niloufer Hospital for Women and Children", "category": "Government women and children's hospital", "area": "Red Hills" },
+        { "name": "Sir Ronald Ross Institute (Fever Hospital)", "category": "Government infectious disease hospital", "area": "Nallakunta" }
+      ]
+    },
+    "kolkata": {
+      "district": "Kolkata",
+      "state": "West Bengal",
+      "aliases": ["calcutta", "howrah"],
+      "facilities": [
+        { "name": "SSKM Hospital (IPGME&R)", "category": "Government tertiary hospital", "area": "Bhowanipore" },
+        { "name": "Medical College and Hospital Kolkata", "category": "Government tertiary hospital", "area": "College Street" },
+        { "name": "Nil Ratan Sircar Medical College and Hospital", "category": "Government tertiary hospital", "area": "Sealdah" },
+        { "name": "R.G. Kar Medical College and Hospital", "category": "Government tertiary hospital", "area": "Shyambazar" }
+      ]
+    },
+    "patna": {
+      "district": "Patna",
+      "state": "Bihar",
+      "aliases": [],
+      "facilities": [
+        { "name": "Patna Medical College and Hospital", "category": "Government tertiary hospital", "area": "Ashok Rajpath" },
+        { "name": "Indira Gandhi Institute of Medical Sciences", "category": "Government tertiary institute", "area": "Sheikhpura" },
+        { "name": "Nalanda Medical College and Hospital", "category": "Government tertiary hospital", "area": "Kankarbagh" },
+        { "name": "Guru Gobind Singh Sadar Hospital", "category": "Government district hospital", "area": "Bankipore" }
+      ]
+    },
+    "jaipur": {
+      "district": "Jaipur",
+      "state": "Rajasthan",
+      "aliases": [],
+      "facilities": [
+        { "name": "Sawai Man Singh (SMS) Hospital", "category": "Government tertiary hospital", "area": "Near Ram Niwas Bagh" },
+        { "name": "Jaipuria Hospital", "category": "Government district hospital", "area": "Jawahar Lal Nehru Marg" },
+        { "name": "Mahila Chikitsalaya", "category": "Government women's hospital", "area": "Sanganeri Gate" },
+        { "name": "Kanwatia Hospital", "category": "Government district hospital", "area": "Shastri Nagar" }
+      ]
+    },
+    "bhopal": {
+      "district": "Bhopal",
+      "state": "Madhya Pradesh",
+      "aliases": [],
+      "facilities": [
+        { "name": "Hamidia Hospital (Gandhi Medical College)", "category": "Government tertiary hospital", "area": "Royal Market" },
+        { "name": "AIIMS Bhopal", "category": "Government tertiary institute", "area": "Saket Nagar" },
+        { "name": "Jai Prakash District Hospital", "category": "Government district hospital", "area": "1250 Quarters" },
+        { "name": "Sultania Zanana Hospital", "category": "Government women's hospital", "area": "Royal Market" }
+      ]
+    },
+    "guwahati": {
+      "district": "Kamrup Metropolitan",
+      "state": "Assam",
+      "aliases": ["gauhati", "kamrup"],
+      "facilities": [
+        { "name": "Gauhati Medical College and Hospital", "category": "Government tertiary hospital", "area": "Bhangagarh" },
+        { "name": "Mahendra Mohan Choudhury Hospital", "category": "Government hospital", "area": "Panbazar" },
+        { "name": "Guwahati Civil Hospital", "category": "Government district hospital", "area": "Bhangagarh" }
+      ]
+    }
+  }
+}
