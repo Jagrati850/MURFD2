@@ -30,7 +30,6 @@ from livekit.agents import (
     room_io,
 )
 from livekit.plugins import murf, silero, google, deepgram, noise_cancellation
-from livekit.plugins.turn_detector.multilingual import MultilingualModel
 
 from health_tools import (
     find_health_facilities,
