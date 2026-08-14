@@ -1,27 +1,24 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useTheme } from 'next-themes';
 import { AnimatePresence, motion } from 'motion/react';
 import {
   useSessionContext,
   useVoiceAssistant,
   useConnectionState,
-  useRoomContext,
 } from '@livekit/components-react';
-import { ConnectionState, RoomEvent } from 'livekit-client';
+import { ConnectionState } from 'livekit-client';
 import type { AppConfig } from '@/app-config';
 import { AgentSessionView_01 } from '@/components/agents-ui/blocks/agent-session-view-01';
 import { WelcomeView } from '@/components/app/welcome-view';
 import { Header } from '@/components/app/header';
 import { AnalyticsDashboard } from '@/components/app/analytics-dashboard';
 import { HealthDataPanel } from '@/components/app/health-data-panel';
-import { SpecialistChatView } from '@/components/app/specialist-chat-view';
 
 const MotionWelcomeView = motion.create(WelcomeView);
 const MotionSessionView = motion.create(AgentSessionView_01);
 const MotionAnalyticsView = motion.create(AnalyticsDashboard);
-const MotionSpecialistView = motion.create(SpecialistChatView);
 
 const VIEW_MOTION_PROPS = {
   variants: {
@@ -40,36 +37,13 @@ interface ViewControllerProps {
 
 export function ViewController({ appConfig }: ViewControllerProps) {
   const { isConnected, start, end } = useSessionContext();
-  const room = useRoomContext();
   const connectionState = useConnectionState();
   const voiceAssistant = useVoiceAssistant();
   const { resolvedTheme } = useTheme();
 
   const [micError, setMicError] = useState<string | null>(null);
   const [activeView, setActiveView] = useState<'agent' | 'analytics'>('agent');
-  const [activeCallSubTab, setActiveCallSubTab] = useState<'orb' | 'specialist' | 'transcript'>('orb');
-
-  // Auto-switch to Specialist Chat sub-tab when handoff data event arrives
-  useEffect(() => {
-    if (!room) return;
-
-    const onData = (payload: Uint8Array, _p: unknown, _k: unknown, topic?: string) => {
-      if (topic !== 'health_data') return;
-      try {
-        const msg = JSON.parse(new TextDecoder().decode(payload));
-        if (msg?.kind === 'handoff') {
-          setActiveCallSubTab('specialist');
-        }
-      } catch (err) {
-        console.warn('Handoff listener error:', err);
-      }
-    };
-
-    room.on(RoomEvent.DataReceived, onData);
-    return () => {
-      room.off(RoomEvent.DataReceived, onData);
-    };
-  }, [room]);
+  const [activeCallSubTab, setActiveCallSubTab] = useState<'orb' | 'transcript'>('orb');
 
   // Determine the 5 Agent States (Day 3)
   const getAgentState = (): 'ready' | 'connecting' | 'listening' | 'speaking' | 'ended' => {
@@ -149,7 +123,7 @@ export function ViewController({ appConfig }: ViewControllerProps) {
               {isConnected && (
                 <div>
                   {/* View Switcher during active call */}
-                  <div className="fixed top-20 right-6 z-40 flex items-center gap-1.5 bg-black/80 border border-white/10 p-1.5 rounded-xl backdrop-blur-md font-mono text-xs shadow-2xl">
+                  <div className="fixed top-20 right-6 z-40 flex items-center gap-2 bg-black/80 border border-white/10 p-1.5 rounded-xl backdrop-blur-md font-mono text-xs shadow-2xl">
                     <button
                       onClick={() => setActiveCallSubTab('orb')}
                       className={`px-3 py-1.5 rounded-lg transition-all ${
@@ -159,17 +133,6 @@ export function ViewController({ appConfig }: ViewControllerProps) {
                       }`}
                     >
                       Dark Orb 3D
-                    </button>
-                    <button
-                      onClick={() => setActiveCallSubTab('specialist')}
-                      className={`px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 ${
-                        activeCallSubTab === 'specialist'
-                          ? 'bg-purple-600 text-white font-semibold shadow-lg'
-                          : 'text-purple-300 hover:text-white'
-                      }`}
-                    >
-                      <span>Specialist Chat</span>
-                      <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />
                     </button>
                     <button
                       onClick={() => setActiveCallSubTab('transcript')}
@@ -183,7 +146,6 @@ export function ViewController({ appConfig }: ViewControllerProps) {
                     </button>
                   </div>
 
-                  {/* Sub-Tab 1: Main Dark Orb View */}
                   {activeCallSubTab === 'orb' && (
                     <MotionWelcomeView
                       key="session-orb"
@@ -195,16 +157,6 @@ export function ViewController({ appConfig }: ViewControllerProps) {
                     />
                   )}
 
-                  {/* Sub-Tab 2: Separate Specialist Agent Chat Area (Day 9) */}
-                  {activeCallSubTab === 'specialist' && (
-                    <MotionSpecialistView
-                      key="specialist-chat"
-                      {...VIEW_MOTION_PROPS}
-                      onEndCall={end}
-                    />
-                  )}
-
-                  {/* Sub-Tab 3: Full Live Transcript View */}
                   {activeCallSubTab === 'transcript' && (
                     <MotionSessionView
                       key="session-view"
@@ -233,7 +185,7 @@ export function ViewController({ appConfig }: ViewControllerProps) {
               )}
             </>
           )}
-        AnimatePresence>
+        </AnimatePresence>
       </div>
     </div>
   );
