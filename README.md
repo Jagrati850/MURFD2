@@ -1,12 +1,12 @@
-# Health Access Voice Agent — Voice for Bharat Challenge 2026 (Days 1 – 8)
+# Health Access Voice Agent — Voice for Bharat Challenge 2026 (Days 1 – 9)
 
 A comprehensive, multilingual AI Voice Assistant built for the **Health Access Track** in India as part of the **Voice for Bharat Challenge 2026**.
 
-Built with the fastest TTS API, **Murf Falcon** (voice: *Anisha*), powered by **LiveKit Agents**, **Deepgram Nova-3** (multilingual STT), **Google Gemini 3.5 Flash Lite**, and a persistent **SQLite Database**.
+Built with the fastest TTS API, **Murf Falcon** (voice: *Anisha* for Main Agent, *Pooja* for Specialist Agent), powered by **LiveKit Agents**, **Deepgram Nova-3** (multilingual STT), **Google Gemini 3.5 Flash Lite**, and a persistent **SQLite Database**.
 
 ---
 
-## 🌟 Key Highlights Across Days 1 to 8
+## 🌟 Key Highlights Across Days 1 to 9
 
 | Day | Feature | Description & Implementation | Primary Files |
 | :--- | :--- | :--- | :--- |
@@ -18,12 +18,14 @@ Built with the fastest TTS API, **Murf Falcon** (voice: *Anisha*), powered by **
 | **Day 6** | **Outbound Calls & Reminders** | Outbound medication/vaccination reminder call scheduler tool (`tool_trigger_outbound_reminder`). | `backend/src/agent.py` |
 | **Day 7** | **Human Escalation Protocol** | Doctor & ASHA Healthcare Worker escalation tool (`tool_create_human_escalation`) triggered for red-flag symptoms/doctor reviews with caller consent check and concise summary generation. | `backend/src/memory.py`, `backend/src/agent.py` |
 | **Day 8** | **Call Analytics Dashboard** | SQLite `call_analytics` logging on session disconnect, Next.js `/api/analytics` API route, and an interactive UI Dashboard displaying Total Calls, Success/Failure metrics, Escalations, and Live SQLite Call History logs. | `frontend/app/api/analytics/route.ts`, `analytics-dashboard.tsx` |
+| **Day 9** | **Specialist Agent Handoff** | Created a specialist agent (`ClinicAppointmentAgent` — voice: **Pooja**) and a handoff tool (`transfer_to_clinic_specialist`) allowing the Main Agent (voice: **Anisha**) to seamlessly transfer appointment booking context. | `backend/src/agent.py`, `memory.py` |
 
 ---
 
 ## 🔊 Murf Falcon TTS & Language Rules
 
-- **TTS Engine**: `murf.TTS(voice="Anisha", style="Conversation", text_pacing=True)` — fastest voice synthesis API.
+- **Main Agent TTS**: `murf.TTS(voice="Anisha", style="Conversation", text_pacing=True)` — Warm, empathetic primary health assistant.
+- **Specialist Agent TTS**: `murf.TTS(voice="Pooja", style="Conversation", text_pacing=True)` — Distinct, professional clinic appointment specialist.
 - **STT Engine**: `deepgram.STT(model="nova-3", language="multi")` — automatically detects Indian languages.
 - **Native Script Rule**: System prompt strictly enforces writing every language in its native script:
   - **Hindi** → Devanagari (e.g. नमस्ते, not "namaste")
@@ -63,8 +65,16 @@ Built with the fastest TTS API, **Murf Falcon** (voice: *Anisha*), powered by **
   - **Successful Calls** metric with percentage badge
   - **Failed / Early Disconnects** metric
   - **Human Escalations (Day 7)** counter
-  - **Completion Ratio Bar**
-  - **Live Call Logs Table** with filtering and timestamps
+  - **Specialist Bookings (Day 9)** counter
+  - **Completion Ratio Bar** & **Live Call Logs Table**
+
+### Day 9: Specialist Agent Handoff (`ClinicAppointmentAgent`)
+- **Specialist Agent**: `ClinicAppointmentAgent` (Voice: **Pooja**).
+- **Handoff Tool**: `transfer_to_clinic_specialist(self, context: RunContext)`.
+- **Seamless Context Transfer**: Uses `chat_ctx=self.chat_ctx.copy(exclude_instructions=True)` so the specialist inherits all caller details (name, symptoms, district) spoken to the main agent!
+- **Specialist Tools**:
+  - `tool_book_clinic_appointment`: Books a doctor consultation slot at a clinic/PHC and saves to SQLite `clinic_appointments` table.
+  - `tool_check_appointment_slots`: Checks available morning/afternoon doctor consultation slots.
 
 ---
 
@@ -122,12 +132,12 @@ Open **`http://localhost:3000`** in your browser!
 
 | Action / Prompt | Expected Agent Behavior |
 | :--- | :--- |
+| **"I want to book an appointment at the clinic"** | Main Agent (voice: **Anisha**) triggers `transfer_to_clinic_specialist` -> Handoff to Specialist Agent (voice: **Pooja**). |
+| **Specialist Interaction ("Tomorrow at 10 AM")** | Specialist (voice: **Pooja**) calls `tool_book_clinic_appointment`, confirms booking, and saves record to SQLite. |
 | **"मुझे तीन दिन से बुखार है"** | Triage → `amber`, facility lookup, answered in Devanagari Hindi. |
 | **"I am having severe chest pain"** | Triage → `red`, emergency guidance + 112 call + Human Escalation created. |
 | **"Nearest hospital near 221005?"** | Live OpenStreetMap lookup for PIN 221005, returning real facilities. |
-| **"Aaj bahar kaam karna theek rahega?"** | Live Open-Meteo AQI & temperature advisory spoken with health precautions. |
-| **"Remember my name is Jagrati"** | Agent asks for consent, saves to SQLite DB, and greets by name on next call. |
-| **Click "Analytics Dashboard" Tab** | Displays live Day 8 metrics, success rates, and SQLite call logs table. |
+| **Click "Analytics Dashboard" Tab** | Displays live Day 8/9 metrics, success rates, specialist bookings, and SQLite call logs. |
 
 ---
 

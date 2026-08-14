@@ -1,10 +1,11 @@
 """
-SQLite-based persistent memory and analytics for the Health Access Voice Agent.
+SQLite-based persistent memory, escalations, analytics, and clinic appointments.
 
 Stores:
-- User memory (preferences, symptoms, health goals, home district)
-- Human escalations (Day 7: requests for ASHA worker/doctor intervention with user consent)
-- Call analytics (Day 8: total calls, success/failure status, triage levels, and logs for dashboard)
+- User memory (Day 4: preferences, symptoms, health goals, home district)
+- Human escalations (Day 7: ASHA worker / doctor escalation requests)
+- Call analytics (Day 8: call logs, metrics, success rates)
+- Clinic appointments (Day 9: specialist handoff appointment bookings)
 """
 
 import json
@@ -37,7 +38,7 @@ def _get_connection() -> sqlite3.Connection:
 
 
 def init_database() -> None:
-    """Create tables for user memory, human escalations (Day 7), and call analytics (Day 8)."""
+    """Create tables for user memory, human escalations, call analytics, and clinic appointments."""
     conn = _get_connection()
     try:
         # Table 1: User Persistent Memory (Day 4)
@@ -57,7 +58,7 @@ def init_database() -> None:
             """
         )
 
-        # Table 2: Human Escalations (Day 7 - Escalations to ASHA Worker / Doctor)
+        # Table 2: Human Escalations (Day 7)
         conn.execute(
             """
             CREATE TABLE IF NOT EXISTS human_escalations (
@@ -76,7 +77,7 @@ def init_database() -> None:
             """
         )
 
-        # Table 3: Call Analytics Logs (Day 8 - Call Analytics Dashboard)
+        # Table 3: Call Analytics Logs (Day 8)
         conn.execute(
             """
             CREATE TABLE IF NOT EXISTS call_analytics (
@@ -88,6 +89,23 @@ def init_database() -> None:
                 duration_seconds     INTEGER DEFAULT 0,
                 summary              TEXT,
                 timestamp            TEXT
+            )
+            """
+        )
+
+        # Table 4: Clinic Appointments (Day 9 - Specialist Handoff)
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS clinic_appointments (
+                appointment_id       TEXT PRIMARY KEY,
+                user_id              TEXT,
+                user_name            TEXT,
+                facility_name        TEXT,
+                preferred_date       TEXT,
+                time_slot            TEXT,
+                contact_number       TEXT,
+                status               TEXT DEFAULT 'confirmed',
+                created_at           TEXT
             )
             """
         )
@@ -279,7 +297,6 @@ def create_human_escalation(
         )
         conn.commit()
 
-        # Also log call as escalated in analytics
         log_call_analytics(
             call_id=f"call_{escalation_id}",
             user_id=user_id,
@@ -336,12 +353,12 @@ def log_call_analytics(
     call_id: Optional[str] = None,
     user_id: str = "default_user",
     user_name: str = "Caller",
-    outcome: str = "success",  # 'success' | 'failed' | 'escalated'
-    triage_level: str = "routine",  # 'routine' | 'urgent' | 'emergency'
+    outcome: str = "success",
+    triage_level: str = "routine",
     duration_seconds: int = 45,
     summary: str = "Health triage call completed.",
 ) -> dict:
-    """Record the outcome of a call in the SQLite call_analytics table."""
+    """Record call metrics in call_analytics table."""
     conn = _get_connection()
     try:
         c_id = call_id or f"call_{uuid.uuid4().hex[:8]}"
@@ -372,7 +389,7 @@ def log_call_analytics(
 
 
 def get_call_analytics_stats() -> dict:
-    """Return aggregated metrics (Total, Successful, Failed, Escalated) & logs for Day 8 Dashboard."""
+    """Return aggregated metrics & logs for Day 8 Dashboard."""
     conn = _get_connection()
     try:
         total = conn.execute("SELECT COUNT(*) FROM call_analytics").fetchone()[0] or 0
@@ -398,7 +415,6 @@ def get_call_analytics_stats() -> dict:
             for r in rows
         ]
 
-        # Populate sample seed metrics if DB is empty so dashboard works on first view
         if total == 0:
             _seed_sample_analytics(conn)
             return get_call_analytics_stats()
@@ -415,13 +431,96 @@ def get_call_analytics_stats() -> dict:
         conn.close()
 
 
+# ---------------------------------------------------------------------------
+# Day 9: Clinic Appointment Booking Functions (Specialist Handoff)
+# ---------------------------------------------------------------------------
+def book_clinic_appointment(
+    user_id: str,
+    user_name: str,
+    facility_name: str,
+    preferred_date: str = "Tomorrow",
+    time_slot: str = "10:00 AM",
+    contact_number: str = "Provided on Call",
+) -> dict:
+    """Book a clinic / PHC doctor appointment via the Specialist Agent (Day 9)."""
+    conn = _get_connection()
+    try:
+        apt_id = f"apt_{uuid.uuid4().hex[:8]}"
+        now = datetime.now(timezone.utc).isoformat()
+
+        conn.execute(
+            """
+            INSERT INTO clinic_appointments
+                (appointment_id, user_id, user_name, facility_name, preferred_date, time_slot, contact_number, status, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, 'confirmed', ?)
+            """,
+            (
+                apt_id,
+                user_id,
+                user_name or "Caller",
+                facility_name or "District Primary Health Centre",
+                preferred_date or "Tomorrow",
+                time_slot or "10:00 AM",
+                contact_number or "Provided on Call",
+                now,
+            ),
+        )
+        conn.commit()
+
+        log_call_analytics(
+            call_id=f"call_{apt_id}",
+            user_id=user_id,
+            user_name=user_name,
+            outcome="success",
+            triage_level="routine",
+            duration_seconds=90,
+            summary=f"Specialist appointment booked at {facility_name} for {preferred_date} ({time_slot}).",
+        )
+
+        logger.info("Booked clinic appointment %s for %s", apt_id, user_id)
+        return {
+            "status": "confirmed",
+            "appointment_id": apt_id,
+            "facility_name": facility_name,
+            "date": preferred_date,
+            "time_slot": time_slot,
+            "message": f"Appointment successfully confirmed at {facility_name} for {preferred_date} at {time_slot}. Token ID: {apt_id}.",
+            "timestamp": now,
+        }
+    finally:
+        conn.close()
+
+
+def get_clinic_appointments() -> List[Dict[str, Any]]:
+    """Fetch booked clinic appointments for dashboard."""
+    conn = _get_connection()
+    try:
+        rows = conn.execute(
+            "SELECT * FROM clinic_appointments ORDER BY created_at DESC LIMIT 20"
+        ).fetchall()
+        return [
+            {
+                "appointment_id": r["appointment_id"],
+                "user_name": r["user_name"],
+                "facility_name": r["facility_name"],
+                "preferred_date": r["preferred_date"],
+                "time_slot": r["time_slot"],
+                "status": r["status"],
+                "created_at": r["created_at"],
+            }
+            for r in rows
+        ]
+    finally:
+        conn.close()
+
+
 def _seed_sample_analytics(conn: sqlite3.Connection) -> None:
-    """Seed initial sample records for dashboard visualization on fresh start."""
+    """Seed initial sample records for dashboard visualization."""
     now = datetime.now(timezone.utc).isoformat()
     samples = [
         ("call_001", "jagrati", "Jagrati Sharma", "success", "routine", 68, "Symptom check: headache & mild fever. Safe rest guidance provided.", now),
         ("call_002", "ramesh_k", "Ramesh Kumar", "escalated", "emergency", 120, "Chest pain reported. Escalated to emergency services 112.", now),
-        ("call_003", "sunita_d", "Sunita Devi", "success", "routine", 45, "Vaccination schedule query answered in Devanagari Hindi.", now),
+        ("call_003", "sunita_d", "Sunita Devi", "success", "routine", 52, "Vaccination schedule answered in Devanagari Hindi.", now),
         ("call_004", "anita_p", "Anita Patel", "failed", "routine", 12, "Caller disconnected before symptom intake completed.", now),
         ("call_005", "vikram_s", "Vikram Singh", "success", "urgent", 95, "High fever for 3 days. Directed to nearest PHC facility.", now),
     ]

@@ -3,7 +3,6 @@ import sqlite3 from 'sqlite3';
 import { open } from 'sqlite';
 import path from 'path';
 
-// Path to backend SQLite database
 const dbPath = path.resolve(process.cwd(), '..', 'backend', 'data', 'health_memory.db');
 
 export async function GET() {
@@ -13,7 +12,6 @@ export async function GET() {
       driver: sqlite3.Database,
     });
 
-    // Ensure tables exist
     await db.exec(`
       CREATE TABLE IF NOT EXISTS call_analytics (
         call_id TEXT PRIMARY KEY,
@@ -39,20 +37,32 @@ export async function GET() {
         status TEXT DEFAULT 'pending',
         created_at TEXT
       );
+
+      CREATE TABLE IF NOT EXISTS clinic_appointments (
+        appointment_id TEXT PRIMARY KEY,
+        user_id TEXT,
+        user_name TEXT,
+        facility_name TEXT,
+        preferred_date TEXT,
+        time_slot TEXT,
+        contact_number TEXT,
+        status TEXT DEFAULT 'confirmed',
+        created_at TEXT
+      );
     `);
 
-    // Fetch call counts
     const totalRow = await db.get('SELECT COUNT(*) as count FROM call_analytics');
     const successRow = await db.get("SELECT COUNT(*) as count FROM call_analytics WHERE outcome = 'success'");
     const failedRow = await db.get("SELECT COUNT(*) as count FROM call_analytics WHERE outcome = 'failed'");
     const escalatedRow = await db.get("SELECT COUNT(*) as count FROM call_analytics WHERE outcome = 'escalated'");
+    const appointmentRow = await db.get("SELECT COUNT(*) as count FROM clinic_appointments");
 
     let total = totalRow?.count || 0;
     let success = successRow?.count || 0;
     let failed = failedRow?.count || 0;
     let escalated = escalatedRow?.count || 0;
+    let appointmentCount = appointmentRow?.count || 0;
 
-    // Seed initial records if empty so dashboard displays live metrics right away
     if (total === 0) {
       const now = new Date().toISOString();
       await db.run(`
@@ -65,14 +75,22 @@ export async function GET() {
         ('call_105', 'vikram_s', 'Vikram Singh', 'success', 'urgent', 110, 'High fever 3 days. Facility lookup returned nearby PHC Varanasi.', '${now}')
       `);
 
+      await db.run(`
+        INSERT OR IGNORE INTO clinic_appointments (appointment_id, user_id, user_name, facility_name, preferred_date, time_slot, contact_number, status, created_at)
+        VALUES
+        ('apt_201', 'jagrati', 'Jagrati Sharma', 'District Primary Health Centre Varanasi', 'Tomorrow', '10:30 AM', '+91 98765 43210', 'confirmed', '${now}')
+      `);
+
       total = 5;
       success = 3;
       failed = 1;
       escalated = 1;
+      appointmentCount = 1;
     }
 
     const recentCalls = await db.all('SELECT * FROM call_analytics ORDER BY timestamp DESC LIMIT 15');
     const escalations = await db.all('SELECT * FROM human_escalations ORDER BY created_at DESC LIMIT 10');
+    const appointments = await db.all('SELECT * FROM clinic_appointments ORDER BY created_at DESC LIMIT 10');
 
     await db.close();
 
@@ -83,9 +101,11 @@ export async function GET() {
       successful_calls: success,
       failed_calls: failed,
       escalated_calls: escalated,
+      specialist_appointments: appointmentCount,
       success_rate_percent: successRate,
       recent_calls: recentCalls,
       escalations: escalations,
+      appointments: appointments,
     });
   } catch (error: any) {
     console.error('Analytics API error:', error);
@@ -95,12 +115,11 @@ export async function GET() {
         successful_calls: 3,
         failed_calls: 1,
         escalated_calls: 1,
+        specialist_appointments: 1,
         success_rate_percent: "75.0",
-        recent_calls: [
-          { call_id: 'call_101', user_name: 'Jagrati Sharma', outcome: 'success', triage_level: 'routine', duration_seconds: 74, summary: 'Symptom check & guidance', timestamp: new Date().toISOString() },
-          { call_id: 'call_102', user_name: 'Ramesh Kumar', outcome: 'escalated', triage_level: 'emergency', duration_seconds: 135, summary: 'Chest pain escalation to 112', timestamp: new Date().toISOString() }
-        ],
+        recent_calls: [],
         escalations: [],
+        appointments: [],
       },
       { status: 200 }
     );

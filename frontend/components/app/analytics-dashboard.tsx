@@ -24,14 +24,26 @@ interface EscalationRecord {
   created_at: string;
 }
 
+interface AppointmentRecord {
+  appointment_id: string;
+  user_name: string;
+  facility_name: string;
+  preferred_date: string;
+  time_slot: string;
+  status: string;
+  created_at: string;
+}
+
 interface AnalyticsData {
   total_calls: number;
   successful_calls: number;
   failed_calls: number;
   escalated_calls: number;
+  specialist_appointments: number;
   success_rate_percent: string;
   recent_calls: CallRecord[];
   escalations: EscalationRecord[];
+  appointments: AppointmentRecord[];
 }
 
 export function AnalyticsDashboard() {
@@ -72,9 +84,11 @@ export function AnalyticsDashboard() {
     successful_calls: 3,
     failed_calls: 1,
     escalated_calls: 1,
+    specialist_appointments: 1,
     success_rate_percent: '75.0',
     recent_calls: [],
     escalations: [],
+    appointments: [],
   };
 
   return (
@@ -84,10 +98,10 @@ export function AnalyticsDashboard() {
         <div>
           <div className="inline-flex items-center gap-2 font-mono text-xs text-amber-500 uppercase tracking-widest mb-1">
             <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping" />
-            DAY 8 — CALL ANALYTICS DASHBOARD
+            DAY 8/9 — CALL ANALYTICS & SPECIALIST HANDOFF DASHBOARD
           </div>
           <h2 className="font-serif text-3xl md:text-5xl text-white font-normal">
-            Agent Performance & Triage Metrics
+            Agent Metrics & Specialist Bookings
           </h2>
         </div>
         <button
@@ -98,66 +112,93 @@ export function AnalyticsDashboard() {
         </button>
       </div>
 
-      {/* 4 Core Stat Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      {/* Core Stat Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         {/* Total Calls */}
-        <div className="border border-white/10 rounded-2xl p-6 bg-neutral-950/60 backdrop-blur-md relative overflow-hidden">
-          <div className="font-mono text-xs text-neutral-400 uppercase tracking-wider mb-2">Total Calls</div>
-          <div className="font-serif text-4xl text-white font-semibold">{stats.total_calls}</div>
-          <div className="text-[10px] font-mono text-neutral-500 mt-2">Recorded in SQLite DB</div>
+        <div className="border border-white/10 rounded-2xl p-5 bg-neutral-950/60 backdrop-blur-md relative overflow-hidden">
+          <div className="font-mono text-[11px] text-neutral-400 uppercase tracking-wider mb-2">Total Calls</div>
+          <div className="font-serif text-3xl text-white font-semibold">{stats.total_calls}</div>
+          <div className="text-[10px] font-mono text-neutral-500 mt-2">Recorded in SQLite</div>
         </div>
 
         {/* Successful Calls */}
-        <div className="border border-emerald-500/20 rounded-2xl p-6 bg-emerald-950/20 backdrop-blur-md relative overflow-hidden">
-          <div className="font-mono text-xs text-emerald-400 uppercase tracking-wider mb-2">Successful Calls</div>
-          <div className="font-serif text-4xl text-emerald-300 font-semibold">{stats.successful_calls}</div>
+        <div className="border border-emerald-500/20 rounded-2xl p-5 bg-emerald-950/20 backdrop-blur-md relative overflow-hidden">
+          <div className="font-mono text-[11px] text-emerald-400 uppercase tracking-wider mb-2">Successful Calls</div>
+          <div className="font-serif text-3xl text-emerald-300 font-semibold">{stats.successful_calls}</div>
           <div className="text-[10px] font-mono text-emerald-400/80 mt-2">
             Success Rate: <span className="font-bold">{stats.success_rate_percent}%</span>
           </div>
         </div>
 
         {/* Failed Calls */}
-        <div className="border border-red-500/20 rounded-2xl p-6 bg-red-950/20 backdrop-blur-md relative overflow-hidden">
-          <div className="font-mono text-xs text-red-400 uppercase tracking-wider mb-2">Failed / Early Disconnects</div>
-          <div className="font-serif text-4xl text-red-300 font-semibold">{stats.failed_calls}</div>
-          <div className="text-[10px] font-mono text-red-400/80 mt-2">Calls incomplete or unfulfilled</div>
+        <div className="border border-red-500/20 rounded-2xl p-5 bg-red-950/20 backdrop-blur-md relative overflow-hidden">
+          <div className="font-mono text-[11px] text-red-400 uppercase tracking-wider mb-2">Failed / Incomplete</div>
+          <div className="font-serif text-3xl text-red-300 font-semibold">{stats.failed_calls}</div>
+          <div className="text-[10px] font-mono text-red-400/80 mt-2">Early disconnects</div>
         </div>
 
-        {/* Escalated Calls (Day 7 Integration) */}
-        <div className="border border-amber-500/20 rounded-2xl p-6 bg-amber-950/20 backdrop-blur-md relative overflow-hidden">
-          <div className="font-mono text-xs text-amber-400 uppercase tracking-wider mb-2">Human Escalations (Day 7)</div>
-          <div className="font-serif text-4xl text-amber-300 font-semibold">{stats.escalated_calls}</div>
-          <div className="text-[10px] font-mono text-amber-400/80 mt-2">ASHA Worker / Doctor Alerts</div>
+        {/* Human Escalations (Day 7) */}
+        <div className="border border-amber-500/20 rounded-2xl p-5 bg-amber-950/20 backdrop-blur-md relative overflow-hidden">
+          <div className="font-mono text-[11px] text-amber-400 uppercase tracking-wider mb-2">Human Escalations (Day 7)</div>
+          <div className="font-serif text-3xl text-amber-300 font-semibold">{stats.escalated_calls}</div>
+          <div className="text-[10px] font-mono text-amber-400/80 mt-2">ASHA / Doctor Alerts</div>
+        </div>
+
+        {/* Specialist Appointments (Day 9) */}
+        <div className="border border-purple-500/20 rounded-2xl p-5 bg-purple-950/20 backdrop-blur-md relative overflow-hidden">
+          <div className="font-mono text-[11px] text-purple-400 uppercase tracking-wider mb-2">Specialist Bookings (Day 9)</div>
+          <div className="font-serif text-3xl text-purple-300 font-semibold">{stats.specialist_appointments}</div>
+          <div className="text-[10px] font-mono text-purple-400/80 mt-2">Clinic Handoffs (Voice: Pooja)</div>
         </div>
       </div>
 
-      {/* Analytics Visual Bar */}
-      <div className="border border-white/10 rounded-2xl p-6 bg-neutral-950/40 space-y-3">
-        <div className="flex justify-between items-center text-xs font-mono text-neutral-400 uppercase tracking-wider">
-          <span>Overall Call Completion Ratio</span>
-          <span className="text-white font-bold">{stats.success_rate_percent}% Success</span>
+      {/* Day 9 Specialist Handoff Appointments Section */}
+      <div className="border border-purple-500/20 rounded-2xl p-6 bg-purple-950/10 backdrop-blur-md space-y-4">
+        <div className="flex items-center justify-between border-b border-purple-500/20 pb-3">
+          <div className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-purple-400 animate-pulse" />
+            <h3 className="font-serif text-2xl text-white">Day 9 Specialist Handoff Bookings</h3>
+          </div>
+          <span className="font-mono text-xs text-purple-300 uppercase tracking-widest bg-purple-900/50 px-3 py-1 rounded-full border border-purple-500/30">
+            Handed off to Clinic Specialist (Voice: Pooja)
+          </span>
         </div>
-        <div className="w-full h-3 bg-neutral-800 rounded-full overflow-hidden flex">
-          <div
-            style={{ width: `${(stats.successful_calls / (stats.total_calls || 1)) * 100}%` }}
-            className="h-full bg-emerald-500 transition-all"
-            title="Successful Calls"
-          />
-          <div
-            style={{ width: `${(stats.escalated_calls / (stats.total_calls || 1)) * 100}%` }}
-            className="h-full bg-amber-500 transition-all"
-            title="Human Escalations"
-          />
-          <div
-            style={{ width: `${(stats.failed_calls / (stats.total_calls || 1)) * 100}%` }}
-            className="h-full bg-red-500 transition-all"
-            title="Failed Calls"
-          />
-        </div>
-        <div className="flex items-center gap-6 font-mono text-[10px] text-neutral-400 pt-1">
-          <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-500" /> Successful</span>
-          <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-amber-500" /> Escalated (Day 7)</span>
-          <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-red-500" /> Incomplete</span>
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse font-sans text-xs">
+            <thead>
+              <tr className="border-b border-purple-500/20 text-purple-300 font-mono uppercase text-[10px] tracking-wider">
+                <th className="py-2.5 px-4">Token ID</th>
+                <th className="py-2.5 px-4">Patient Name</th>
+                <th className="py-2.5 px-4">Facility / Clinic</th>
+                <th className="py-2.5 px-4">Date & Time</th>
+                <th className="py-2.5 px-4">Status</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-purple-500/10 text-neutral-300">
+              {stats.appointments.length > 0 ? (
+                stats.appointments.map((apt) => (
+                  <tr key={apt.appointment_id} className="hover:bg-purple-900/20 transition-colors">
+                    <td className="py-2.5 px-4 font-mono text-purple-300 text-[11px]">{apt.appointment_id}</td>
+                    <td className="py-2.5 px-4 font-semibold text-white">{apt.user_name || 'Caller'}</td>
+                    <td className="py-2.5 px-4 text-neutral-300">{apt.facility_name}</td>
+                    <td className="py-2.5 px-4 font-mono text-neutral-400">{apt.preferred_date} ({apt.time_slot})</td>
+                    <td className="py-2.5 px-4">
+                      <span className="px-2 py-0.5 rounded font-mono text-[10px] uppercase font-bold bg-emerald-950 border border-emerald-500/40 text-emerald-300">
+                        {apt.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={5} className="py-4 text-center text-neutral-500 font-mono text-xs">
+                    No specialist appointments booked yet. Ask the agent: "I want to book an appointment" to test Day 9 handoff!
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
 

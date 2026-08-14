@@ -1,16 +1,13 @@
 """
-Health Access Voice Agent — Voice for Bharat Challenge (Days 4, 5, 6, 7, 8).
+Health Access Voice Agent — Voice for Bharat Challenge (Days 1 to 9).
 
-A voice-based health assistant built on:
-- LiveKit Agents framework
-- Murf Falcon TTS (Anisha voice) — The fastest TTS API
-- Deepgram Nova-3 STT (multilingual support)
-- Google Gemini LLM
-- SQLite Persistent Memory (Day 4)
-- Live Domain Tools (Day 5: PHC facility lookup, Open-Meteo health advisory, symptom triage)
-- Outbound Reminders (Day 6)
-- Human Escalation Protocol (Day 7: ASHA Worker / Doctor escalation tool)
-- Call Analytics & Logging (Day 8: SQLite Call Analytics Dashboard integration)
+Features:
+- Main Health Agent (voice: Anisha) & Specialist Clinic Appointment Agent (voice: Pooja)
+- Day 9 Agent Handoff via `transfer_to_clinic_specialist`
+- LiveKit Agents framework & Murf Falcon TTS (the fastest TTS API)
+- Deepgram Nova-3 STT (multilingual support) & Google Gemini LLM
+- SQLite Persistent Memory (Day 4), Live Domain Tools (Day 5), Outbound Reminders (Day 6)
+- Human Escalation Protocol (Day 7), Call Analytics Dashboard Logging (Day 8)
 """
 
 import json
@@ -22,6 +19,7 @@ from livekit.agents import (
     Agent,
     AgentServer,
     AgentSession,
+    ChatContext,
     JobContext,
     JobProcess,
     RunContext,
@@ -46,6 +44,7 @@ from memory import (
     delete_user_memory,
     create_human_escalation,
     log_call_analytics,
+    book_clinic_appointment,
 )
 
 logger = logging.getLogger("agent")
@@ -56,67 +55,137 @@ load_dotenv(".env.local")
 init_database()
 
 # ---------------------------------------------------------------------------
-# System Prompt (Follows exact Murf Challenge guidelines & Script rules)
+# System Prompts
 # ---------------------------------------------------------------------------
-SYSTEM_PROMPT = """You are a Health Access Assistant — a friendly, empathetic, calm, helpful, and professional voice agent powered by Murf Falcon (the fastest TTS API) that provides general health guidance to users in India.
+SYSTEM_PROMPT = """You are a Health Access Assistant — a friendly, empathetic, calm, helpful, and professional main voice agent powered by Murf Falcon (voice: Anisha).
 
-## YOUR IDENTITY
-- You are a Health Access Assistant, NOT a doctor.
-- You help users understand symptoms, provide general health guidance, and remember their preferences across conversations.
-- You speak in a warm, reassuring tone powered by Murf Falcon TTS.
-- Your responses are concise and natural for voice — no complex formatting, emojis, or symbols.
+## YOUR IDENTITY & ROLE
+- You are the main Health Access Assistant.
+- You help users understand symptoms, provide general health guidance, remember preferences across calls, and find nearby health centres.
+- If the user wants to BOOK AN APPOINTMENT, reserve a clinic slot, or check doctor timings, TRANSFER THEM TO THE CLINIC SPECIALIST (`transfer_to_clinic_specialist`).
 
 ## LANGUAGE & SCRIPT RULES
-- Automatically detect the language the user is speaking.
+- Automatically detect the language spoken.
 - Always reply in the SAME language as the user.
 - ALWAYS write every language in its OWN NATIVE SCRIPT:
-  - Hindi → Devanagari (नमस्ते), never romanized (never "namaste").
+  - Hindi → Devanagari (नमस्ते), never romanized ("namaste").
   - Tamil → Tamil script, Bengali → Bengali script, Marathi → Devanagari, etc.
-- If the user mixes Hindi and English (Hinglish), reply naturally in the same mixed style.
-- Do NOT hardcode any locale. Detect and mirror automatically.
 
 ## HEALTH GUARDRAILS — STRICT RULES
 - NEVER diagnose diseases or medical conditions.
 - NEVER prescribe medicines or recommend specific medications.
-- NEVER recommend antibiotics or any prescription drugs.
 - NEVER claim to be a doctor or medical professional.
-- NEVER provide fake medical certificates or documentation.
-- NEVER provide dangerous or unverified medical advice.
-- If a user requests prescription medicines, politely refuse and suggest consulting a qualified doctor.
-- Always clarify that your guidance is general and not a substitute for professional medical advice.
+- If a user reports emergency symptoms (chest pain, stroke signs, severe breathlessness), deliver the emergency message and call `tool_create_human_escalation`.
 
-## EMERGENCY ESCALATION — HIGHEST PRIORITY (DAY 7)
-If the user mentions ANY of these symptoms, IMMEDIATELY stop normal conversation, give the emergency warning, AND call `tool_create_human_escalation` (with consent):
-- Chest pain or tightness
-- Difficulty breathing or shortness of breath
-- Stroke symptoms (sudden numbness, confusion, trouble speaking, severe headache)
-- Loss of consciousness or fainting
-- Severe or uncontrollable bleeding
-- High fever with confusion or delirium
+## AGENT HANDOFF (DAY 9)
+- `transfer_to_clinic_specialist`: CALL THIS TOOL whenever the caller expresses an interest in booking an appointment, checking doctor availability, or reserving a clinic visit.
+"""
 
-Emergency response (adapt to user's language):
-"Your symptoms may require urgent medical attention. Please contact your nearest hospital or emergency medical services immediately. In India, dial 112 for emergency services."
+SPECIALIST_PROMPT = """You are the Clinic & Appointment Specialist — an expert healthcare scheduling agent powered by Murf Falcon (voice: Pooja).
 
-## MEMORY TOOLS (DAY 4)
-- `lookup_user`: Call at start of conversation or when user identifies themselves.
-- `save_user_memory`: ASK FOR EXPLICIT CONSENT BEFORE SAVING ANY DATA. Save name, language, symptoms, goals, age, conditions, and home district.
-- `delete_user_memory`: Call when user says "forget everything" or "delete my data".
+## YOUR IDENTITY & ROLE
+- You handle clinic doctor appointment bookings, slot availability checks, clinic timing queries, and token reservations.
+- You inherit the user's previous conversation context automatically.
+- You speak in a warm, reassuring, professional tone in the user's native language.
 
-## LIVE DATA TOOLS (DAY 5)
-- `assess_symptom_urgency`: Call whenever user describes symptoms.
-- `find_nearby_health_centre`: Call when user asks for PHC / clinic / hospital or after an urgent triage verdict.
-- `check_local_health_advisory`: Call for heat, pollution, AQI, or weather health queries.
+## LANGUAGE & SCRIPT RULES
+- Always reply in the user's native script:
+  - Hindi → Devanagari (नमस्ते), never romanized ("namaste").
+  - Tamil → Tamil script, Marathi → Devanagari, etc.
 
-## HUMAN ESCALATION TOOL (DAY 7)
-- `tool_create_human_escalation`: Call when a user has a red-flag symptom or asks for a doctor diagnosis/review. Ask for user permission first, then create a clear, concise summary for the human ASHA worker / doctor. Do NOT include private PINs or sensitive OTPs.
-
-## OUTBOUND CALL REMINDERS (DAY 6)
-- `tool_trigger_outbound_reminder`: Call when a user asks for a follow-up call, medication reminder, or vaccination reminder call.
+## YOUR SPECIALIST TOOLS
+- `tool_book_clinic_appointment`: Book a doctor consultation slot at a Primary Health Centre (PHC) or clinic.
+- `tool_check_appointment_slots`: Check available morning/afternoon doctor slots at a facility.
 """
 
 
 # ---------------------------------------------------------------------------
-# Health Access Agent with Full Tool Suite (Days 4, 5, 6, 7, 8)
+# Day 9 Specialist Agent: Clinic & Appointment Specialist (Voice: Pooja)
+# ---------------------------------------------------------------------------
+class ClinicAppointmentAgent(Agent):
+    def __init__(self, chat_ctx: ChatContext | None = None) -> None:
+        super().__init__(
+            instructions=SPECIALIST_PROMPT,
+            chat_ctx=chat_ctx,
+            tts=murf.TTS(
+                voice="Pooja",
+                style="Conversation",
+                tokenizer=tokenize.basic.SentenceTokenizer(min_sentence_len=2),
+                text_pacing=True,
+            ),
+        )
+
+    async def on_enter(self) -> None:
+        """Greeting when handoff to specialist occurs."""
+        await self.session.generate_reply(
+            instructions="Introduce yourself warmly as the Clinic & Appointment Specialist (voice: Pooja). Confirm you have received their context and offer to help book their doctor slot or check clinic timings."
+        )
+
+    def _get_user_id(self) -> str:
+        try:
+            ctx = get_job_context(required=False)
+            room = ctx.room if ctx else None
+            if room and room.remote_participants:
+                for participant in room.remote_participants.values():
+                    if participant.identity:
+                        return participant.identity
+        except Exception as exc:
+            logger.debug("Could not read participant identity: %s", exc)
+        return "default_user"
+
+    async def _publish_to_ui(self, kind: str, payload: dict) -> None:
+        try:
+            ctx = get_job_context(required=False)
+            if ctx and ctx.room:
+                await ctx.room.local_participant.publish_data(
+                    json.dumps({"kind": kind, "payload": payload}, ensure_ascii=False),
+                    topic="health_data",
+                    reliable=True,
+                )
+        except Exception as exc:
+            logger.debug("Could not mirror %s to UI: %s", kind, exc)
+
+    @function_tool()
+    async def tool_book_clinic_appointment(
+        self,
+        context: RunContext,
+        user_name: str = "Caller",
+        facility_name: str = "Primary Health Centre",
+        preferred_date: str = "Tomorrow",
+        time_slot: str = "10:00 AM",
+        contact_number: str = "Provided on Call",
+    ) -> dict:
+        """Book a doctor appointment slot at a clinic or Primary Health Centre (PHC)."""
+        user_id = self._get_user_id()
+        res = book_clinic_appointment(
+            user_id=user_id,
+            user_name=user_name,
+            facility_name=facility_name,
+            preferred_date=preferred_date,
+            time_slot=time_slot,
+            contact_number=contact_number,
+        )
+        await self._publish_to_ui("appointment", res)
+        return res
+
+    @function_tool()
+    async def tool_check_appointment_slots(
+        self,
+        context: RunContext,
+        facility_name: str = "Primary Health Centre",
+        date: str = "Tomorrow",
+    ) -> dict:
+        """Check available doctor consultation slots at a clinic or PHC."""
+        return {
+            "facility_name": facility_name,
+            "date": date,
+            "available_slots": ["9:00 AM", "10:30 AM", "2:00 PM", "4:30 PM"],
+            "message": f"Available doctor slots at {facility_name} for {date}: 9:00 AM, 10:30 AM, 2:00 PM, 4:30 PM.",
+        }
+
+
+# ---------------------------------------------------------------------------
+# Main Health Access Agent (Voice: Anisha)
 # ---------------------------------------------------------------------------
 class HealthAccessAgent(Agent):
     def __init__(self) -> None:
@@ -143,19 +212,18 @@ class HealthAccessAgent(Agent):
 
                 context_msg = " ".join(context_parts)
                 self.session.generate_reply(
-                    instructions=f"{context_msg} Greet them warmly by name in their language/script, reference previous interactions, and ask how they are doing today."
+                    instructions=f"{context_msg} Greet them warmly by name in their native language/script, reference previous interactions, and ask how you can assist."
                 )
             else:
                 self.session.generate_reply(
-                    instructions="This is a new user. Introduce yourself as Health Access Assistant powered by Murf Falcon and ask how you can help."
+                    instructions="This is a new user. Introduce yourself as Health Access Assistant powered by Murf Falcon (voice: Anisha) and ask how you can help."
                 )
         else:
             self.session.generate_reply(
-                instructions="Introduce yourself as Health Access Assistant powered by Murf Falcon and ask how you can help."
+                instructions="Introduce yourself as Health Access Assistant powered by Murf Falcon (voice: Anisha) and ask how you can help."
             )
 
     def _get_user_id(self) -> str:
-        """Extract user identity or default."""
         try:
             ctx = get_job_context(required=False)
             room = ctx.room if ctx else None
@@ -168,7 +236,6 @@ class HealthAccessAgent(Agent):
         return "default_user"
 
     async def _publish_to_ui(self, kind: str, payload: dict) -> None:
-        """Mirror tool outputs to web UI."""
         try:
             ctx = get_job_context(required=False)
             if ctx and ctx.room:
@@ -181,12 +248,23 @@ class HealthAccessAgent(Agent):
             logger.debug("Could not mirror %s to UI: %s", kind, exc)
 
     # -------------------------------------------------------------------
+    # Day 9: Agent Handoff Tool
+    # -------------------------------------------------------------------
+    @function_tool()
+    async def transfer_to_clinic_specialist(self, context: RunContext) -> tuple[Agent, str]:
+        """Transfer the user to the Clinic & Appointment Specialist (voice: Pooja) when they want to book an appointment, check doctor slots, reserve a clinic visit, or speak to the booking specialist."""
+        logger.info("Performing agent handoff -> ClinicAppointmentAgent")
+        specialist = ClinicAppointmentAgent(
+            chat_ctx=self.chat_ctx.copy(exclude_instructions=True)
+        )
+        return specialist, "Transferring you to our Clinic and Appointment Specialist now."
+
+    # -------------------------------------------------------------------
     # Day 4: Memory Tools
     # -------------------------------------------------------------------
     @function_tool()
     async def tool_lookup_user(self, context: RunContext, user_id: str) -> dict:
         """Look up stored user memory."""
-        logger.info("Looking up user: %s", user_id)
         result = lookup_user(user_id)
         return result or {"status": "not_found", "message": "No previous record found for this user."}
 
@@ -292,18 +370,10 @@ class HealthAccessAgent(Agent):
         context: RunContext,
         user_id: str,
         phone_number: str,
-        reminder_type: str = "medication",  # 'medication' | 'vaccination' | 'triage_followup'
+        reminder_type: str = "medication",
         scheduled_time: str = "tomorrow morning",
     ) -> dict:
-        """Trigger or schedule an outbound follow-up or medication reminder call for the user.
-
-        Args:
-            user_id: User identifier.
-            phone_number: Caller's phone number or SIP address.
-            reminder_type: Type of reminder ('medication', 'vaccination', 'triage_followup').
-            scheduled_time: When to make the call (e.g. '8:00 AM tomorrow').
-        """
-        logger.info("Outbound call scheduled for %s (%s)", user_id, reminder_type)
+        """Trigger or schedule an outbound follow-up or medication reminder call."""
         res = {
             "status": "scheduled",
             "user_id": user_id,
@@ -315,7 +385,7 @@ class HealthAccessAgent(Agent):
         return res
 
     # -------------------------------------------------------------------
-    # Day 7: Human Escalation Tool (ASHA Worker / Doctor Escalation)
+    # Day 7: Human Escalation Tool
     # -------------------------------------------------------------------
     @function_tool()
     async def tool_create_human_escalation(
@@ -330,21 +400,7 @@ class HealthAccessAgent(Agent):
         preferred_contact: str = "Voice Callback",
         consent_given: bool = True,
     ) -> dict:
-        """Create a human help request for an ASHA healthcare worker or doctor.
-
-        ONLY CALL AFTER ASKING USER FOR PERMISSION TO SHARE THEIR CONTEXT.
-        Do NOT include passwords, OTPs, or financial details.
-
-        Args:
-            user_id: User ID.
-            user_name: Preferred name of caller.
-            urgency: 'emergency', 'high', or 'medium'.
-            reason: Main reason for human help (e.g., 'Red-flag symptom: chest pain').
-            summary: Concise summary of caller's symptoms, language, and status.
-            user_language: Language spoken by caller.
-            preferred_contact: Preferred follow-up method.
-            consent_given: Whether user gave permission to share information.
-        """
+        """Create a human help request for an ASHA healthcare worker or doctor."""
         result = create_human_escalation(
             user_id=user_id,
             user_name=user_name,
@@ -378,7 +434,7 @@ async def health_agent(ctx: JobContext):
         "room": ctx.room.name,
     }
 
-    # Set up the voice AI pipeline using Murf Falcon, Gemini, Deepgram
+    # Set up the voice AI pipeline using Murf Falcon (voice: Anisha for Main Agent)
     session = AgentSession(
         stt=deepgram.STT(model="nova-3", language="multi"),
         llm=google.LLM(model="gemini-3.5-flash-lite"),
