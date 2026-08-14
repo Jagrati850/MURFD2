@@ -14,6 +14,7 @@ import { AgentSessionView_01 } from '@/components/agents-ui/blocks/agent-session
 import { WelcomeView } from '@/components/app/welcome-view';
 import { Header } from '@/components/app/header';
 import { AnalyticsDashboard } from '@/components/app/analytics-dashboard';
+import { HealthDataPanel } from '@/components/app/health-data-panel';
 
 const MotionWelcomeView = motion.create(WelcomeView);
 const MotionSessionView = motion.create(AgentSessionView_01);
@@ -94,10 +95,13 @@ export function ViewController({ appConfig }: ViewControllerProps) {
         onViewChange={setActiveView}
       />
 
+      {/* Live Data & Specialist Agent Handoff Panel */}
+      {isConnected && <HealthDataPanel />}
+
       {/* Main View Area */}
       <div className="pt-20">
         <AnimatePresence mode="wait">
-          {/* View 1: Day 8 Call Analytics Dashboard */}
+          {/* View 1: Day 8/9 Call Analytics & Specialist Bookings Dashboard */}
           {activeView === 'analytics' && (
             <MotionAnalyticsView key="analytics-view" {...VIEW_MOTION_PROPS} />
           )}

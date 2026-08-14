@@ -254,6 +254,14 @@ class HealthAccessAgent(Agent):
     async def transfer_to_clinic_specialist(self, context: RunContext) -> tuple[Agent, str]:
         """Transfer the user to the Clinic & Appointment Specialist (voice: Pooja) when they want to book an appointment, check doctor slots, reserve a clinic visit, or speak to the booking specialist."""
         logger.info("Performing agent handoff -> ClinicAppointmentAgent")
+        await self._publish_to_ui("handoff", {
+            "agent_name": "Clinic & Appointment Specialist",
+            "voice": "Pooja (Murf Falcon)",
+            "specialist_role": "Doctor Consultations & Slot Booking",
+            "data_freshness": "live",
+            "status": "transferred",
+            "message": "Conversation transferred to Clinic & Appointment Specialist (Voice: Pooja)"
+        })
         specialist = ClinicAppointmentAgent(
             chat_ctx=self.chat_ctx.copy(exclude_instructions=True)
         )

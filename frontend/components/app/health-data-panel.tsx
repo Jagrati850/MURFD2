@@ -2,17 +2,9 @@
 
 import React, { useEffect, useState } from 'react';
 import { RoomEvent } from 'livekit-client';
-import { Activity, AlertTriangle, Hospital, Wind } from 'lucide-react';
+import { Activity, AlertTriangle, Hospital, Wind, UserCheck, CalendarCheck } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { useRoomContext } from '@livekit/components-react';
-
-/**
- * Day 5 — shows what the agent just fetched, while it is speaking it.
- *
- * The backend mirrors every tool result over the LiveKit data channel on topic
- * `health_data`. Nothing here drives the conversation: if this panel breaks, the
- * voice agent is unaffected.
- */
 
 type Facility = {
   name: string;
@@ -48,9 +40,19 @@ type ToolResult = {
   us_aqi?: number;
   heat_risk?: string;
   air_quality?: string;
+  // handoff (Day 9)
+  agent_name?: string;
+  voice?: string;
+  specialist_role?: string;
+  message?: string;
+  // appointment (Day 9)
+  appointment_id?: string;
+  facility_name?: string;
+  date?: string;
+  time_slot?: string;
 };
 
-type Payload = { kind: 'triage' | 'facilities' | 'advisory'; payload: ToolResult };
+type Payload = { kind: 'triage' | 'facilities' | 'advisory' | 'handoff' | 'appointment'; payload: ToolResult };
 
 const TRIAGE_STYLES: Record<string, { dot: string; label: string }> = {
   red: { dot: 'bg-red-500', label: 'EMERGENCY' },
@@ -82,11 +84,13 @@ function Card({
   title,
   result,
   children,
+  badgeOverride,
 }: {
   icon: React.ReactNode;
   title: string;
   result: ToolResult;
   children: React.ReactNode;
+  badgeOverride?: React.ReactNode;
 }) {
   return (
     <motion.div
@@ -100,7 +104,7 @@ function Card({
           {icon}
           <span className="text-xs font-semibold tracking-wide">{title}</span>
         </div>
-        <FreshnessBadge result={result} />
+        {badgeOverride || <FreshnessBadge result={result} />}
       </div>
       <div className="space-y-1.5 text-[11px] leading-relaxed text-neutral-300">{children}</div>
       {result.data_as_of_spoken && (
@@ -123,6 +127,52 @@ function FailureNote({ result }: { result: ToolResult }) {
       {result.reason && <p className="text-[10px] text-red-200/80">Reason: {result.reason}</p>}
       <p className="mt-1 text-[11px] text-neutral-200">{result.spoken_fallback}</p>
     </div>
+  );
+}
+
+function HandoffCard({ result }: { result: ToolResult }) {
+  return (
+    <Card
+      icon={<UserCheck className="h-3.5 w-3.5 text-purple-400" />}
+      title="Agent Handoff Active"
+      result={result}
+      badgeOverride={
+        <span className="rounded border border-purple-400/50 bg-purple-950/60 px-1.5 py-0.5 text-[10px] tracking-wider text-purple-300 font-bold">
+          DAY 9 HANDOFF
+        </span>
+      }
+    >
+      <div className="space-y-1 rounded-lg border border-purple-500/20 bg-purple-950/30 p-2.5">
+        <div className="text-xs font-bold text-purple-200">{result.agent_name || 'Specialist Agent'}</div>
+        <div className="text-[10px] text-purple-300/80">Voice: <span className="font-semibold text-white">{result.voice || 'Pooja (Murf Falcon)'}</span></div>
+        <div className="text-[10px] text-neutral-300">{result.specialist_role}</div>
+      </div>
+      <p className="text-[10px] text-emerald-300 flex items-center gap-1 mt-1">
+        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+        {result.message}
+      </p>
+    </Card>
+  );
+}
+
+function AppointmentCard({ result }: { result: ToolResult }) {
+  return (
+    <Card
+      icon={<CalendarCheck className="h-3.5 w-3.5 text-emerald-400" />}
+      title="Appointment Confirmed"
+      result={result}
+      badgeOverride={
+        <span className="rounded border border-emerald-400/50 bg-emerald-950/60 px-1.5 py-0.5 text-[10px] tracking-wider text-emerald-300 font-bold">
+          BOOKED
+        </span>
+      }
+    >
+      <div className="space-y-1 rounded-lg border border-emerald-500/20 bg-emerald-950/30 p-2.5">
+        <div className="text-xs font-bold text-emerald-200">{result.facility_name || 'Primary Health Centre'}</div>
+        <div className="text-[10px] text-neutral-300">Date: <span className="font-semibold text-white">{result.date}</span> ({result.time_slot})</div>
+        <div className="text-[10px] font-mono text-emerald-400">Token ID: {result.appointment_id}</div>
+      </div>
+    </Card>
   );
 }
 
@@ -229,9 +279,11 @@ export function HealthDataPanel() {
 
   return (
     <div className="pointer-events-none fixed top-20 left-6 z-40 w-[19rem] max-w-[calc(100vw-3rem)] space-y-2 font-mono">
-      <p className="text-[10px] tracking-[0.2em] text-neutral-500">FETCHED BY THE AGENT</p>
-      <div className="max-h-[calc(100vh-8rem)] space-y-2 overflow-y-auto pr-1">
+      <p className="text-[10px] tracking-[0.2em] text-neutral-500">LIVE AGENT & TOOL DATA</p>
+      <div className="max-h-[calc(100vh-8rem)] space-y-2 overflow-y-auto pr-1 pointer-events-auto">
         <AnimatePresence mode="popLayout">
+          {cards.handoff && <HandoffCard key="handoff" result={cards.handoff} />}
+          {cards.appointment && <AppointmentCard key="appointment" result={cards.appointment} />}
           {cards.triage && <TriageCard key="triage" result={cards.triage} />}
           {cards.facilities && <FacilitiesCard key="facilities" result={cards.facilities} />}
           {cards.advisory && <AdvisoryCard key="advisory" result={cards.advisory} />}
