@@ -5,30 +5,11 @@
 
 ---
 
-## 📌 Executive Summary & 10-Day Master Milestone Matrix
+## 📸 Showcase Gallery: System & Live Dashboard in Action
 
-Over the 10 days of the **#VoiceForBharat Challenge 2026**, I engineered an autonomous, multilingual **Health Access Voice Assistant** designed for Indian healthcare. The system evaluates symptom urgency, queries live Primary Health Centres (PHCs) and weather/AQI advisories, remembers user preferences with consent, schedules outbound reminders, escalates emergencies to human ASHA workers/doctors, tracks call analytics, and executes context-inherited agent handoffs to a specialist booking agent.
+Here is a visual walk-through of the Health Access Voice Agent built over the 10-day challenge:
 
-### Master 10-Day Implementation Matrix
-
-| Day | Milestone | Core Feature Built | Technical Stack | Architectural Outcome |
-| :--- | :--- | :--- | :--- | :--- |
-| **Day 1** | Starter Setup & Murf Integration | WebRTC Voice Pipeline Setup | Murf Falcon API, Deepgram Nova-3, LiveKit | Ultra-low latency voice pipeline initialized |
-| **Day 2** | Persona & Native Script Rules | Empathetic Persona & Native Script Mirror | System Prompt, Devanagari Hindi (नमस्ते) | Native script mirroring for flawless Indian pronunciation |
-| **Day 3** | 3D Dark Orb UI & Agent States | WebGL Particle Visualizer & 5 Agent States | Next.js 15, Tailwind, WebGL Shader | Dynamic state feedback (*Ready*, *Connecting*, *Listening*, *Speaking*, *Ended*) |
-| **Day 4** | Persistent Memory & Consent | SQLite Storage Engine & Consent Protocol | SQLite (WAL Mode), `user_memory` table | Consent-first preference & symptom tracking across calls |
-| **Day 5** | Live Domain Tools & Fallbacks | Health Facility, AQI Advisory & Triage | OpenStreetMap Overpass, Open-Meteo, Local Triage | Real-time domain lookups with graceful offline fallback handling |
-| **Day 6** | Outbound Call Reminders | Follow-up Call Scheduler Tool | `tool_trigger_outbound_reminder` | Automated follow-up check-ins & medication reminders |
-| **Day 7** | Human Escalation Protocol | Red-Flag Emergency Escalation | `tool_create_human_escalation`, `human_escalations` table | 112 redirection & concise ASHA worker summaries |
-| **Day 8** | Call Analytics Dashboard | Live Performance Dashboard & SQLite Logs | SQLite `call_analytics`, Next.js `/api/analytics` | Total, Success %, Failure, and Escalation call tracking |
-| **Day 9** | Specialist Agent Handoff | Multi-Agent Context Transfer | `ClinicAppointmentAgent` (Voice: Pooja), `transfer_to_clinic_specialist` | Context-inherited handoff to specialist with audible voice switch |
-| **Day 10** | Technical Retrospective & Open Source | Full Master Documentation | Complete Markdown Docs & GitHub Repository | Open-source release & community deployment guide |
-
----
-
-## 🎨 System Interface & Showcase Gallery
-
-### 1. Main Landing Page & 3D Dark Orb Visualizer
+### 1. Hero Interface & 3D Dark Orb Visualizer (Day 3)
 ![Hero Landing Page & 3D Dark Orb Canvas](docs/images/hero-landing.png)
 *Figure 1: Main Landing Page featuring the interactive 3D WebGL Dark Orb visualizer.*
 
@@ -40,138 +21,160 @@ Over the 10 days of the **#VoiceForBharat Challenge 2026**, I engineered an auto
 ![Live Active Call Audio Visualizer](docs/images/live-call-visualizer.png)
 *Figure 3: Active Voice Session interface with live audio visualizer.*
 
+### 4. Day 8/9 Call Analytics & Specialist Handoff Dashboard
+![Day 8/9 Call Analytics & Specialist Handoff Dashboard](docs/images/analytics-dashboard.png)
+*Figure 4: Call Analytics & Specialist Handoff Dashboard showing Total Calls, Success Ratio, Escalations, and Specialist Appointments.*
+
+### 5. Live SQLite Call Logs & Triage Records
+![Live Call Logs in SQLite](docs/images/live-sqlite-call-logs.png)
+*Figure 5: Live SQLite Call Analytics & Triage Logs.*
+
+---
+
+## 📌 Executive Summary & 10-Day Milestone Journey
+
+Over 10 days, I engineered an autonomous, multilingual **Health Access Voice Assistant** designed for Indian healthcare. The system evaluates symptom urgency, queries live Primary Health Centres (PHCs) and weather/AQI advisories, remembers user preferences with consent, schedules outbound reminders, escalates emergencies to human ASHA workers/doctors, tracks call analytics, and executes context-inherited agent handoffs to a specialist booking agent.
+
+### 🌟 10-Day Building Milestones:
+
+- **Day 1: Starter Setup & Murf Integration**
+  - Tech Stack: Murf Falcon API (Anisha voice), Deepgram Nova-3, LiveKit Agents.
+  - Outcome: Ultra-low latency voice pipeline initialized over WebRTC.
+
+- **Day 2: Persona & Native Script Mirroring**
+  - Tech Stack: System Prompt, Devanagari Hindi (नमस्ते).
+  - Outcome: Strict native script mirroring so Murf Falcon speaks with an authentic Indian accent instead of an English accent.
+
+- **Day 3: 3D Dark Orb UI & 5 Agent States**
+  - Tech Stack: Next.js 15, TailwindCSS, WebGL Shader, Framer Motion.
+  - Outcome: Dynamic state feedback across *Ready*, *Connecting*, *Listening*, *Speaking*, and *Ended*.
+
+- **Day 4: Persistent Memory & Consent Protocol**
+  - Tech Stack: SQLite (WAL Mode), `user_memory` table.
+  - Outcome: Consent-first preference & symptom tracking across sessions.
+
+- **Day 5: Live Domain Tools & Fallbacks**
+  - Tech Stack: OpenStreetMap Overpass, Open-Meteo, Local Triage Rules.
+  - Outcome: Real-time domain lookups with graceful offline fallback handling.
+
+- **Day 6: Outbound Call Reminders**
+  - Tech Stack: `tool_trigger_outbound_reminder`, LiveKit Telephony.
+  - Outcome: Automated follow-up check-ins & medication reminders.
+
+- **Day 7: Human Escalation Protocol**
+  - Tech Stack: `tool_create_human_escalation`, `human_escalations` table.
+  - Outcome: 112 emergency redirection & concise ASHA helper summaries.
+
+- **Day 8: Call Analytics Dashboard**
+  - Tech Stack: SQLite `call_analytics`, Next.js `/api/analytics`.
+  - Outcome: Total Calls, Success %, Failure, and Escalation tracking.
+
+- **Day 9: Specialist Agent Handoff**
+  - Tech Stack: `ClinicAppointmentAgent` (Voice: Pooja), `transfer_to_clinic_specialist`.
+  - Outcome: Context-inherited handoff to specialist with audible voice switch.
+
+- **Day 10: Technical Retrospective & Open Source**
+  - Tech Stack: Complete Documentation & Public GitHub Repository.
+  - Outcome: Open-source release & community deployment guide.
+
 ---
 
 ## 🏗️ System Architecture & Workflow Diagrams
 
 ### 1. End-to-End Voice & Tool Execution Workflow
 
-```mermaid
-flowchart TD
-    A[Caller Voice Input] --> B[LiveKit Real-Time WebRTC]
-    B --> C[Deepgram Nova-3 Multilingual STT]
-    C -->|Transcribed Text| D[Google Gemini 3.5 Flash Lite LLM]
-    
-    D -->|Evaluate Intent| E{Request Type?}
-    
-    E -->|Symptom Mentioned| F[assess_symptom_urgency Tool]
-    E -->|Facility Lookup| G[find_nearby_health_centre Tool]
-    E -->|Weather / AQI Query| H[check_local_health_advisory Tool]
-    E -->|Emergency Red-Flag| I[tool_create_human_escalation Tool]
-    E -->|Appointment Booking| J[transfer_to_clinic_specialist Handoff]
-    
-    F --> K[LiveKit Data Channel - health_data]
-    G --> K
-    H --> K
-    I --> L[SQLite DB: human_escalations]
-    
-    J -->|Handoff Event| M[Specialist Agent: ClinicAppointmentAgent]
-    M -->|Voice: Pooja| N[Murf Falcon TTS Engine]
-    
-    D -->|Main Voice: Anisha| N
-    N -->|Synthesized Audio| B
-    B -->|Audio Stream| O[Caller Speaker]
+```text
+[ Caller Voice Input ]
+          │
+          ▼
+[ LiveKit Real-Time WebRTC Transport ]
+          │
+          ▼
+[ Deepgram Nova-3 STT (Multilingual) ]
+          │  Transcribed Text
+          ▼
+[ Google Gemini 3.5 Flash Lite LLM ] ──► [ Intent Evaluator ]
+          │
+          ├──► Symptom Mentioned   ──► assess_symptom_urgency Tool
+          ├──► Facility Lookup    ──► find_nearby_health_centre Tool
+          ├──► Weather / AQI      ──► check_local_health_advisory Tool
+          ├──► Emergency Red-Flag ──► tool_create_human_escalation ──► [ SQLite DB ]
+          └──► Appointment Booking──► transfer_to_clinic_specialist
+                                               │
+                                               ▼
+                                  [ ClinicAppointmentAgent ]
+                                    (Voice: Pooja - Murf Falcon)
+                                               │
+                                               ▼
+                                  [ Audio Output to Caller ]
 ```
 
 ### 2. Day 9 Specialist Agent Handoff Sequence
 
-```mermaid
-sequenceDiagram
-    autonumber
-    actor Caller
-    participant MainAgent as Main Health Agent (Voice: Anisha)
-    participant HandoffTool as transfer_to_clinic_specialist Tool
-    participant Specialist as Specialist Agent (Voice: Pooja)
-    participant DB as SQLite Database
-
-    Caller->>MainAgent: "I want to book an appointment at the clinic"
-    MainAgent->>HandoffTool: Execute handoff with chat_ctx.copy()
-    HandoffTool->>MainAgent: Publish "handoff" event to UI data channel
-    HandoffTool->>Specialist: Instantiate ClinicAppointmentAgent with context
-    Specialist->>Caller: "Namaste! I am your Clinic Specialist (Voice: Pooja). Let's book your slot."
-    Caller->>Specialist: "Book for tomorrow at 10 AM"
-    Specialist->>DB: Save to clinic_appointments table
-    DB-->>Specialist: Appointment Confirmed (Token ID: apt_7ab986ff)
-    Specialist->>Caller: "Your appointment is confirmed at Primary Health Centre for tomorrow 10 AM."
+```text
+1. Caller: "I want to book an appointment at the clinic"
+2. Main Agent (Voice: Anisha): Executes transfer_to_clinic_specialist with chat_ctx.copy()
+3. System: Publishes "handoff" event to UI data channel (renders purple DAY 9 HANDOFF card)
+4. Specialist Agent (Voice: Pooja): Takes over conversation seamlessly with inherited caller context
+5. Specialist Agent: "Namaste! I am your Clinic Specialist (Voice: Pooja). Let's book your slot."
+6. Caller: "Book for tomorrow at 10 AM"
+7. Specialist Agent: Invokes tool_book_clinic_appointment -> Saves record to SQLite clinic_appointments table
+8. System: Confirms appointment (Token ID: apt_7ab986ff)
 ```
 
 ---
 
-## 🛠️ Domain Tools & Fallback Matrix (Day 5)
+## 🛠️ Domain Tools & Fallback Strategy (Day 5)
 
-| Tool Name | Purpose | Primary Data Source | Live vs Local | Timeout & Fallback Strategy |
-| :--- | :--- | :--- | :--- | :--- |
-| `find_nearby_health_centre` | Finds hospitals, PHCs, and clinics near district/PIN code | OpenStreetMap Overpass & Nominatim API | **Live** | 8s timeout; falls back to offline dataset `health_facilities.json` + speaks fallback out loud |
-| `check_local_health_advisory` | Fetches temperature, heat index & US AQI air quality | Open-Meteo Weather & Air Quality API | **Live** | 8s timeout; speaks plain fallback note & heat precautions |
-| `assess_symptom_urgency` | Sorts symptoms into Red, Amber, Green urgency bands | Local deterministic ruleset (`health_tools.py`) | **Local** | Runs offline; deterministic checklist ensuring high-risk symptoms trigger emergency warning |
+- **`find_nearby_health_centre`**:
+  - *Purpose*: Finds hospitals, PHCs, and clinics near district/PIN code.
+  - *Source*: OpenStreetMap Overpass & Nominatim API (Live).
+  - *Fallback*: 8s timeout; falls back to offline list `health_facilities.json` + speaks fallback note out loud.
+
+- **`check_local_health_advisory`**:
+  - *Purpose*: Fetches temperature, heat index & US AQI air quality.
+  - *Source*: Open-Meteo Weather & Air Quality API (Live).
+  - *Fallback*: 8s timeout; speaks plain fallback note & heat precautions.
+
+- **`assess_symptom_urgency`**:
+  - *Purpose*: Sorts symptoms into Red, Amber, Green urgency bands.
+  - *Source*: Local deterministic ruleset (`health_tools.py`).
+  - *Fallback*: Runs offline; deterministic checklist ensuring high-risk symptoms trigger emergency warning.
 
 ---
 
 ## 📊 Database Schema Architecture (SQLite WAL Mode)
 
-```
-┌──────────────────────────────────────┐     ┌──────────────────────────────────────┐
-│ user_memory                          │     │ human_escalations                    │
-├──────────────────────────────────────┤     ├──────────────────────────────────────┤
-│ user_id (TEXT, PK)                   │     │ escalation_id (TEXT, PK)             │
-│ preferred_name (TEXT)                │     │ user_id (TEXT)                       │
-│ preferred_language (TEXT)            │     │ user_name (TEXT)                     │
-│ previous_symptoms (JSON TEXT)        │     │ urgency (TEXT)                       │
-│ health_goals (JSON TEXT)             │     │ reason (TEXT)                        │
-│ age_band (TEXT)                      │     │ summary (TEXT)                       │
-│ ongoing_conditions (JSON TEXT)       │     │ user_language (TEXT)                 │
-│ home_district (TEXT)                 │     │ preferred_contact (TEXT)             │
-│ last_conversation_time (TEXT)        │     │ status (TEXT)                        │
-└──────────────────────────────────────┘     └──────────────────────────────────────┘
-
-┌──────────────────────────────────────┐     ┌──────────────────────────────────────┐
-│ call_analytics                       │     │ clinic_appointments                  │
-├──────────────────────────────────────┤     ├──────────────────────────────────────┤
-│ call_id (TEXT, PK)                   │     │ appointment_id (TEXT, PK)            │
-│ user_id (TEXT)                       │     │ user_id (TEXT)                       │
-│ user_name (TEXT)                     │     │ user_name (TEXT)                     │
-│ outcome (TEXT)                       │     │ facility_name (TEXT)                 │
-│ triage_level (TEXT)                  │     │ preferred_date (TEXT)                │
-│ duration_seconds (INTEGER)           │     │ time_slot (TEXT)                     │
-│ summary (TEXT)                       │     │ contact_number (TEXT)                │
-│ timestamp (TEXT)                     │     │ status (TEXT)                        │
-└──────────────────────────────────────┘     └──────────────────────────────────────┘
-```
+- **`user_memory`**: Stores `user_id`, `preferred_name`, `preferred_language`, `previous_symptoms`, `health_goals`, `age_band`, `ongoing_conditions`, `home_district`.
+- **`human_escalations`**: Stores `escalation_id`, `user_id`, `user_name`, `urgency`, `reason`, `summary`, `user_language`, `status`.
+- **`call_analytics`**: Stores `call_id`, `user_id`, `user_name`, `outcome`, `triage_level`, `duration_seconds`, `summary`, `timestamp`.
+- **`clinic_appointments`**: Stores `appointment_id`, `user_id`, `user_name`, `facility_name`, `preferred_date`, `time_slot`, `contact_number`, `status`.
 
 ---
 
-## 📈 Call Analytics & Specialist Bookings Dashboard (Days 8 & 9)
+## 🔊 Voice Pipeline & Agent Persona Specification
 
-![Day 8/9 Call Analytics & Specialist Handoff Dashboard](docs/images/analytics-dashboard.png)
-*Figure 4: Call Analytics & Specialist Handoff Dashboard showing Total Calls, Success Ratio, Escalations, and Specialist Appointments.*
+- **Main Health Access Agent**:
+  - TTS Engine: **Murf Falcon API** (Voice: **Anisha**)
+  - Role: Warm, empathetic primary health assistant.
+  - Primary Tools: `assess_symptom_urgency`, `find_nearby_health_centre`, `check_local_health_advisory`, `transfer_to_clinic_specialist`.
 
-![Live Call Logs in SQLite](docs/images/live-sqlite-call-logs.png)
-*Figure 5: Live SQLite Call Analytics & Triage Logs.*
-
----
-
-## 🔊 Voice Pipeline & Agent Persona Matrix
-
-| Attribute | Main Health Access Agent | Specialist Clinic Agent |
-| :--- | :--- | :--- |
-| **TTS Engine** | **Murf Falcon API** | **Murf Falcon API** |
-| **Voice Name** | **Anisha** | **Pooja** |
-| **Role & Persona** | Warm, empathetic primary health assistant | Professional doctor appointment scheduler |
-| **STT Engine** | Deepgram Nova-3 (`multi`) | Deepgram Nova-3 (`multi`) |
-| **LLM Engine** | Google Gemini 3.5 Flash Lite | Google Gemini 3.5 Flash Lite |
-| **Primary Tools** | `assess_symptom_urgency`, `find_nearby_health_centre`, `check_local_health_advisory`, `transfer_to_clinic_specialist` | `tool_book_clinic_appointment`, `tool_check_appointment_slots` |
+- **Specialist Clinic Agent**:
+  - TTS Engine: **Murf Falcon API** (Voice: **Pooja**)
+  - Role: Professional doctor appointment scheduler.
+  - Primary Tools: `tool_book_clinic_appointment`, `tool_check_appointment_slots`.
 
 ---
 
 ## ⚡ Technical Challenges & Engineering Solutions
 
-### 1. Eliminating Startup Delay (From 56s down to <1s)
-- **Problem**: Pre-importing heavy transformer models in `agent.py` was causing a 56-second process initialization delay.
-- **Solution**: Refactored `agent.py` imports, allowing the LiveKit worker to register with LiveKit Cloud in **0.5 seconds**.
+1. **Eliminating Startup Delay (From 56s down to <1s)**:
+   - *Problem*: Pre-importing heavy transformer models in `agent.py` was causing a 56-second process initialization delay.
+   - *Fix*: Optimized plugin imports in `agent.py`, allowing the LiveKit worker to register with LiveKit Cloud in **0.5 seconds**.
 
-### 2. Flawless Indian Accent Synthesis via Native Script Mirroring
-- **Problem**: English-romanized Hindi ("namaste aap kaise hain") was synthesized with an English accent.
-- **Solution**: Enforced strict Devanagari script rules in system prompts (e.g. नमस्ते), producing clear, authentic Indian pronunciation with Murf Falcon.
+2. **Flawless Indian Accent Synthesis via Native Script Mirroring**:
+   - *Problem*: English-romanized Hindi ("namaste aap kaise hain") was synthesized with an English accent.
+   - *Fix*: Enforced strict Devanagari script rules in system prompts (e.g. नमस्ते), producing clear, authentic Indian pronunciation with Murf Falcon.
 
 ---
 
