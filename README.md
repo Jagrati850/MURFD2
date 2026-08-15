@@ -1,12 +1,15 @@
-# Health Access Voice Agent — Voice for Bharat Challenge 2026 (Days 1 – 9)
+# Health Access Voice Agent — Voice for Bharat Challenge 2026 (Days 1 – 10)
 
 A comprehensive, multilingual AI Voice Assistant built for the **Health Access Track** in India as part of the **Voice for Bharat Challenge 2026**.
 
 Built with the fastest TTS API, **Murf Falcon** (voice: *Anisha* for Main Agent, *Pooja* for Specialist Agent), powered by **LiveKit Agents**, **Deepgram Nova-3** (multilingual STT), **Google Gemini 3.5 Flash Lite**, and a persistent **SQLite Database**.
 
+📖 **Read the Published Day 10 Technical Article**:  
+[https://dev.to/jagrati850/building-an-autonomous-multilingual-health-access-voice-agent-with-murf-falcon-2g2byewlilo](https://dev.to/jagrati850/building-an-autonomous-multilingual-health-access-voice-agent-with-murf-falcon-2g2byewlilo)
+
 ---
 
-## 🌟 Key Highlights Across Days 1 to 9
+## 🌟 Key Highlights Across Days 1 to 10
 
 | Day | Feature | Description & Implementation | Primary Files |
 | :--- | :--- | :--- | :--- |
@@ -19,6 +22,7 @@ Built with the fastest TTS API, **Murf Falcon** (voice: *Anisha* for Main Agent,
 | **Day 7** | **Human Escalation Protocol** | Doctor & ASHA Healthcare Worker escalation tool (`tool_create_human_escalation`) triggered for red-flag symptoms/doctor reviews with caller consent check and concise summary generation. | `backend/src/memory.py`, `backend/src/agent.py` |
 | **Day 8** | **Call Analytics Dashboard** | SQLite `call_analytics` logging on session disconnect, Next.js `/api/analytics` API route, and an interactive UI Dashboard displaying Total Calls, Success/Failure metrics, Escalations, and Live SQLite Call History logs. | `frontend/app/api/analytics/route.ts`, `analytics-dashboard.tsx` |
 | **Day 9** | **Specialist Agent Handoff** | Created a specialist agent (`ClinicAppointmentAgent` — voice: **Pooja**) and a handoff tool (`transfer_to_clinic_specialist`) allowing the Main Agent (voice: **Anisha**) to seamlessly transfer appointment booking context. | `backend/src/agent.py`, `memory.py` |
+| **Day 10** | **Technical Retrospective & Launch** | Full retrospective case study published on DEV.to & open-sourced repository release. | `DAY10_BLOG.md`, `README.md` |
 
 ---
 
@@ -76,6 +80,10 @@ Built with the fastest TTS API, **Murf Falcon** (voice: *Anisha* for Main Agent,
   - `tool_book_clinic_appointment`: Books a doctor consultation slot at a clinic/PHC and saves to SQLite `clinic_appointments` table.
   - `tool_check_appointment_slots`: Checks available morning/afternoon doctor consultation slots.
 
+### Day 10: Technical Retrospective & Open Source Launch
+- Technical retrospective article published on DEV.to: [https://dev.to/jagrati850/building-an-autonomous-multilingual-health-access-voice-agent-with-murf-falcon-2g2byewlilo](https://dev.to/jagrati850/building-an-autonomous-multilingual-health-access-voice-agent-with-murf-falcon-2g2byewlilo)
+- Repository fully configured with documentation and clean architecture.
+
 ---
 
 ## 🚀 How to Run the Project
@@ -105,49 +113,22 @@ LIVEKIT_API_SECRET=your_livekit_api_secret
 AGENT_NAME=health-agent
 ```
 
-### 2. Start Backend & Frontend
-Run the one-click launcher or start in separate terminals:
+### 2. Start Both Services
 
-**Option A: One-Click Launcher (PowerShell)**
+**Option A: PowerShell Launcher**
 ```powershell
 .\start_app.ps1
 ```
 
-**Option B: Separate Terminals**
+**Option B: Manual Terminals**
 ```bash
-# Terminal 1: Backend
+# Terminal 1: Backend Agent
 cd backend
 uv run python src/agent.py dev
 
-# Terminal 2: Frontend
+# Terminal 2: Frontend Next.js
 cd frontend
 pnpm dev
 ```
 
-Open **`http://localhost:3000`** in your browser!
-
----
-
-## 🧪 Testing Guide
-
-| Action / Prompt | Expected Agent Behavior |
-| :--- | :--- |
-| **"I want to book an appointment at the clinic"** | Main Agent (voice: **Anisha**) triggers `transfer_to_clinic_specialist` -> Handoff to Specialist Agent (voice: **Pooja**). |
-| **Specialist Interaction ("Tomorrow at 10 AM")** | Specialist (voice: **Pooja**) calls `tool_book_clinic_appointment`, confirms booking, and saves record to SQLite. |
-| **"मुझे तीन दिन से बुखार है"** | Triage → `amber`, facility lookup, answered in Devanagari Hindi. |
-| **"I am having severe chest pain"** | Triage → `red`, emergency guidance + 112 call + Human Escalation created. |
-| **"Nearest hospital near 221005?"** | Live OpenStreetMap lookup for PIN 221005, returning real facilities. |
-| **Click "Analytics Dashboard" Tab** | Displays live Day 8/9 metrics, success rates, specialist bookings, and SQLite call logs. |
-
----
-
-## 🛡️ Health Guardrails
-- **Not a Doctor**: Clarifies general guidance only.
-- **No Prescriptions**: Never prescribes or names specific medications.
-- **Emergency Redirection**: Chest pain, stroke signs, unconsciousness, severe bleeding, or self-harm trigger immediate emergency responses and dial 112 instructions.
-- **Consent-First**: Data saved only after explicit caller approval.
-
----
-
-## 📝 License
-Built for the **Voice for Bharat Challenge 2026** by Murf AI.
+Open `http://localhost:3000` in your browser!
