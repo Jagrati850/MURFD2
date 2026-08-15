@@ -10,19 +10,19 @@
 Here is a visual walk-through of the Health Access Voice Agent built over the 10-day challenge:
 
 ### 1. Hero Interface & 3D Dark Orb Visualizer (Day 3)
-![Hero Landing Page & 3D Dark Orb Canvas](C:\Users\gupta\.gemini\antigravity-ide\brain\d669ca31-e88b-4e91-a46c-4c46a4132eea\media__1786808633884.png)
+![Hero Landing Page & 3D Dark Orb Canvas](docs/images/hero-landing.png)
 
 ### 2. Five Pillars of Agentic Health Access
-![Five Pillars of Health Access](C:\Users\gupta\.gemini\antigravity-ide\brain\d669ca31-e88b-4e91-a46c-4c46a4132eea\media__1786808670009.png)
+![Five Pillars of Health Access](docs/images/five-pillars.png)
 
 ### 3. Live Active Call Audio Visualizer
-![Live Active Call Audio Visualizer](C:\Users\gupta\.gemini\antigravity-ide\brain\d669ca31-e88b-4e91-a46c-4c46a4132eea\media__1786808730050.png)
+![Live Active Call Audio Visualizer](docs/images/live-call-visualizer.png)
 
 ### 4. Day 8/9 Call Analytics & Specialist Handoff Dashboard
-![Day 8/9 Call Analytics & Specialist Handoff Dashboard](C:\Users\gupta\.gemini\antigravity-ide\brain\d669ca31-e88b-4e91-a46c-4c46a4132eea\media__1786808535476.png)
+![Day 8/9 Call Analytics & Specialist Handoff Dashboard](docs/images/analytics-dashboard.png)
 
 ### 5. Live SQLite Call Logs & Triage Records
-![Live Call Logs in SQLite](C:\Users\gupta\.gemini\antigravity-ide\brain\d669ca31-e88b-4e91-a46c-4c46a4132eea\media__1786808579875.png)
+![Live Call Logs in SQLite](docs/images/live-sqlite-call-logs.png)
 
 ---
 
