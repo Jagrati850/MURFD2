@@ -1,225 +1,133 @@
 # Building an Autonomous Multilingual Health Access Voice Agent in 10 Days with Murf Falcon
 
-*A complete technical retrospective on building a full-stack, voice-first health assistant for India — featuring persistent memory, live domain tools, emergency human escalations, call analytics, and specialist agent handoffs.*
+> **#VoiceForBharat Challenge 2026** | **Health Access Track**
+> Built with **Murf Falcon** — the fastest TTS API in the industry.
 
 ---
 
-## 🚀 Introduction & The Mission
+## 📸 Showcase Gallery: System & Live Dashboard in Action
 
-Healthcare access in rural and semi-urban India faces significant structural hurdles: geographic distance, medical personnel shortages, and language barriers across diverse regional dialects. For millions of citizens, written digital interfaces present high literacy friction, making **natural voice interactions** the most inclusive medium for receiving timely health guidance.
+Here is a visual walk-through of the Health Access Voice Agent built over the 10-day challenge:
 
-Over the last 10 days, as part of the **#VoiceForBharat Challenge 2026**, I built the **Health Access Voice Agent** — an autonomous, privacy-conscious voice AI capable of evaluating symptoms, locating nearby Primary Health Centres (PHCs), assessing weather and air-quality advisories, scheduling outbound reminders, escalating emergencies to human ASHA workers/doctors, and seamlessly handing off appointment bookings to a specialist agent.
+### 1. Hero Interface & 3D Dark Orb Visualizer (Day 3)
+![Hero Landing Page & 3D Dark Orb Canvas](C:\Users\gupta\.gemini\antigravity-ide\brain\d669ca31-e88b-4e91-a46c-4c46a4132eea\media__1786808633884.png)
 
-Crucially, the entire voice pipeline is powered by **Murf Falcon** — the fastest Text-to-Speech (TTS) API in the industry — ensuring ultra-low latency, fluid turn-taking, and natural human-like voice synthesis.
+### 2. Five Pillars of Agentic Health Access
+![Five Pillars of Health Access](C:\Users\gupta\.gemini\antigravity-ide\brain\d669ca31-e88b-4e91-a46c-4c46a4132eea\media__1786808670009.png)
 
----
+### 3. Live Active Call Audio Visualizer
+![Live Active Call Audio Visualizer](C:\Users\gupta\.gemini\antigravity-ide\brain\d669ca31-e88b-4e91-a46c-4c46a4132eea\media__1786808730050.png)
 
-## 🏗️ System Architecture & Tech Stack
+### 4. Day 8/9 Call Analytics & Specialist Handoff Dashboard
+![Day 8/9 Call Analytics & Specialist Handoff Dashboard](C:\Users\gupta\.gemini\antigravity-ide\brain\d669ca31-e88b-4e91-a46c-4c46a4132eea\media__1786808535476.png)
 
-The solution connects real-time audio streaming, LLM reasoning, live domain tools, and persistent SQLite storage.
-
-```
-                  ┌──────────────────────────────────────────────┐
-                  │    User Browser / WebGL Dark Orb UI         │
-                  └──────────────────────┬───────────────────────┘
-                                         │  WebRTC / WebSockets
-                                         ▼
-                  ┌──────────────────────────────────────────────┐
-                  │        LiveKit Real-Time Transport           │
-                  └──────┬───────────────────────────────┬───────┘
-                         │ Audio Stream                  │ Audio Output
-                         ▼                               │
-          ┌─────────────────────────────┐  ┌─────────────┴───────────────┐
-          │ Deepgram Nova-3 STT         │  │ Murf Falcon TTS             │
-          │ (Multilingual Speech-to-Text)│  │ (Anisha / Pooja Voices)     │
-          └──────────────┬──────────────┘  └─────────────▲───────────────┘
-                         │ Transcribed Text              │ Synthesized Audio
-                         ▼                               │
-          ┌──────────────────────────────────────────────┴───────────────┐
-          │ Google Gemini 3.5 Flash Lite LLM (Agentic Reasoning)         │
-          └──────┬───────────────────────────────┬───────────────────────┘
-                 │ Data Lookups                  │ Memory & Logs
-                 ▼                               ▼
-  ┌─────────────────────────────┐  ┌─────────────────────────────────────┐
-  │ Live External APIs          │  │ SQLite Database (WAL Mode)          │
-  │ - OpenStreetMap (Facilities)│  │ - user_memory (Preferences)        │
-  │ - Open-Meteo (AQI/Weather)  │  │ - human_escalations (ASHA Alerts)   │
-  │ - India Post (PIN Codes)    │  │ - call_analytics (Metrics & Logs)  │
-  └─────────────────────────────┘  │ - clinic_appointments (Handoffs)  │
-                                   └─────────────────────────────────────┘
-```
-
-### Core Technologies
-- **Speech-to-Text (STT)**: Deepgram Nova-3 (`language="multi"`) for automatic Indian language detection.
-- **Large Language Model (LLM)**: Google Gemini 3.5 Flash Lite for fast tool calling and reasoning.
-- **Text-to-Speech (TTS)**: **Murf Falcon API** (*Anisha* voice for Main Agent, *Pooja* voice for Specialist Agent) with sentence tokenization and text pacing.
-- **Real-Time Transport**: LiveKit Agents Framework for WebRTC audio transport.
-- **Persistent Storage**: SQLite with WAL (Write-Ahead Logging) mode for concurrent memory and analytics reads/writes.
-- **Frontend UI**: Next.js 15, TailwindCSS, and a WebGL 3D Shader Dark Orb Visualizer (inspired by `dark-orb.aura.build`).
+### 5. Live SQLite Call Logs & Triage Records
+![Live Call Logs in SQLite](C:\Users\gupta\.gemini\antigravity-ide\brain\d669ca31-e88b-4e91-a46c-4c46a4132eea\media__1786808579875.png)
 
 ---
 
-## 🎨 Frontend Architecture & 3D Dark Orb UI
+## 🌟 The Vision: Why Voice First for Health Access?
 
-The application features a sleek dark aesthetic designed to provide immediate visual feedback across **5 Agent States**: `Ready`, `Connecting`, `Listening`, `Speaking`, and `Ended`.
+Healthcare accessibility in rural and semi-urban India faces critical challenges — long travel distances, shortage of medical specialists, and literacy barriers with traditional text-based medical apps.
 
-### Key Features
-1. **Symptom Triage**: Deterministic offline categorization of symptom urgency.
-2. **Native Script Mirror**: Automatic transcription and vocal response in native scripts (Hindi Devanagari, Tamil, Marathi).
-3. **Persistent Memory**: Consent-based user preference tracking across calls.
-4. **Emergency Escalation**: Immediate warning & 112 redirection for red-flag symptoms.
-5. **ASHA Helper Support**: Automated context generation for community health workers.
-6. **Consent Protection**: Strict protocol ensuring no user data is stored without explicit consent.
+Voice is the most natural, inclusive interface for India. Over the last 10 days, I set out to build an **autonomous, privacy-conscious Health Access Voice Assistant** that can:
+- Understand symptoms spoken in Indian languages (Hindi, Tamil, Bengali, Marathi, Hinglish).
+- Evaluate symptom urgency using deterministic triage rules.
+- Locate nearby Primary Health Centres (PHCs) and check weather/air quality advisories live.
+- Remember returning users with explicit consent.
+- Schedule outbound follow-up calls and medication reminders.
+- Escalate red-flag emergencies to human ASHA workers/doctors.
+- Hand off clinic appointment bookings to a specialist agent with an audible voice change!
 
----
-
-## 🛠️ Detailed 10-Day Building Retrospective
-
-### Day 4: Persistent Memory with Explicit Consent
-To make conversations personal without compromising privacy, I implemented SQLite persistent storage (`user_memory` table) backed by a **Consent-First Protocol**. The agent must explicitly ask permission (*"May I remember your name and district for next time?"*) before invoking `save_user_memory`.
-
-```python
-@function_tool()
-async def tool_save_user_memory(
-    self,
-    context: RunContext,
-    user_id: str,
-    preferred_name: str = "",
-    preferred_language: str = "",
-    previous_symptoms: str = "",
-    home_district: str = "",
-) -> dict:
-    """Save user information ONLY AFTER the user gives explicit consent."""
-    symptoms_list = [s.strip() for s in previous_symptoms.split(",") if s.strip()] if previous_symptoms else None
-    return save_user_memory(
-        user_id=user_id,
-        preferred_name=preferred_name or None,
-        preferred_language=preferred_language or None,
-        previous_symptoms=symptoms_list,
-        home_district=home_district or None,
-    )
-```
+The secret sauce behind this fluid experience is **Murf Falcon** — the fastest Text-to-Speech API — delivering instantaneous, human-like voice synthesis with zero audible lag.
 
 ---
 
-### Day 5: Domain Tools & Graceful Fallback Architecture
-Instead of hallucinating healthcare facts, the agent uses three dedicated data tools:
-1. **`find_nearby_health_centre`**: Live OpenStreetMap Overpass & Nominatim lookup for hospitals, clinics, and PHCs.
-2. **`check_local_health_advisory`**: Live Open-Meteo weather, heat index, and air quality (AQI) readings.
-3. **`assess_symptom_urgency`**: Local deterministic triage sorting symptoms into `red` (emergency), `amber` (see doctor), or `green` (self-care).
+## 🛠️ The Tech Stack
 
-#### Handling Offline Network Failures Gracefully
-In rural areas, API connections drop. If a live API lookup times out (8s limit), the system gracefully degrades:
-1. Speaks an honest fallback message out loud (*"The live map service could not be reached..."*).
-2. Uses a bundled offline district list (`health_facilities.json`).
-3. Provides official Indian helplines (112, 108, 104) so the caller is never left in silence.
+- **TTS (Text-to-Speech)**: **Murf Falcon API** (*Anisha* voice for Main Agent, *Pooja* voice for Specialist Agent).
+- **STT (Speech-to-Text)**: Deepgram Nova-3 (`language="multi"`).
+- **LLM Engine**: Google Gemini 3.5 Flash Lite.
+- **Real-Time Transport**: LiveKit Agents Framework (WebRTC / WebSockets).
+- **Database**: SQLite (WAL Mode) for persistent memory, human escalations, call analytics, and specialist appointments.
+- **Frontend UI**: Next.js 15, TailwindCSS, and a WebGL 3D Shader Dark Orb Visualizer.
 
 ---
+
+## 🚀 The 10-Day Building Journey
+
+### Days 1–3: Starter Setup, Native Scripts & 3D Dark Orb UI
+I started by setting up the LiveKit pipeline with **Murf Falcon TTS (Anisha voice)**. To ensure natural pronunciation for Indian languages, I enforced strict native script rules in the system prompt — forcing Hindi to be written in Devanagari (e.g. नमस्ते instead of romanized "namaste").
+
+On the frontend, I built a 3D WebGL Dark Orb particle visualizer supporting 5 distinct Agent States: `Ready`, `Connecting`, `Listening`, `Speaking`, and `Ended`.
+
+### Day 4: Persistent Memory with Consent Protocol
+To make the agent remember returning users across calls, I built an SQLite storage engine (`user_memory` table). The agent strictly obeys a **Consent-First Protocol** — asking permission (*"May I remember your name and district for next time?"*) before saving any context.
+
+### Day 5: Live Domain Tools & Graceful Offline Fallbacks
+Instead of guessing or hallucinating facts, the agent uses three live tools:
+1. `find_nearby_health_centre`: Live OpenStreetMap Overpass lookup for nearby hospitals and PHCs.
+2. `check_local_health_advisory`: Live Open-Meteo temperature, heat index, and air quality (AQI) readings.
+3. `assess_symptom_urgency`: Local deterministic triage sorting symptoms into `red` (emergency), `amber` (see doctor), or `green` (self-care).
+
+If a rural network drops and an API times out, the agent gracefully admits failure out loud (*"The live map directory could not be reached..."*), reads a bundled offline hospital list, and provides official Indian helplines (112, 108).
 
 ### Day 6: Outbound Calls & Reminders
-Added `tool_trigger_outbound_reminder` allowing the agent to schedule follow-up check-in calls for medication compliance, vaccination schedules, or post-triage updates.
+Added `tool_trigger_outbound_reminder` allowing the agent to schedule follow-up check-in calls for medication compliance or vaccination alerts.
 
----
-
-### Day 7: Human Escalation Protocol (ASHA Workers / Doctors)
-AI agents should not attempt to solve critical medical crises alone. When a caller reports red-flag symptoms (chest pain, severe shortness of breath, stroke signs) or requests a doctor review:
-1. The agent delivers an immediate emergency warning and 112 helpline details.
-2. Asks for caller consent to share context with a doctor or ASHA worker.
-3. Invokes `tool_create_human_escalation` to record a concise summary in the `human_escalations` table (excluding PINs/passwords).
-
----
+### Day 7: Emergency Escalation to ASHA Workers / Doctors
+AI should never try to handle critical emergencies alone. When red-flag symptoms (chest pain, stroke signs, severe breathlessness) are detected, the agent:
+1. Delivers an immediate emergency warning and 112 helpline instructions.
+2. Obtains caller permission and creates an escalation record in the `human_escalations` table with a concise summary for ASHA workers/doctors.
 
 ### Day 8: Call Analytics Dashboard
-To monitor performance and triage distribution, I built a live Call Analytics Dashboard backed by a Next.js API route (`/api/analytics`) that queries SQLite directly.
-
-#### Live SQLite Call Logs
-Every call outcome (`success`, `failed`, `escalated`) and duration is automatically recorded upon room disconnection.
-
----
+Built a live Call Analytics Dashboard backed by a Next.js `/api/analytics` route. Every call outcome (`success`, `failed`, `escalated`) and duration is automatically recorded upon disconnection, displaying live performance metrics and SQLite call logs.
 
 ### Day 9: Specialist Agent Handoff (`ClinicAppointmentAgent`)
-One agent shouldn't try to handle everything. I created a dedicated **Clinic & Appointment Specialist** (`ClinicAppointmentAgent`) with a distinct Murf Falcon voice (**Pooja**) to take over when users want to book doctor consultation slots.
+One agent shouldn't try to do everything. I created a dedicated **Clinic & Appointment Specialist** (`ClinicAppointmentAgent`) with a distinct Murf Falcon voice (**Pooja**). 
 
-```python
-# Handoff Tool in Main Agent (Voice: Anisha)
-@function_tool()
-async def transfer_to_clinic_specialist(self, context: RunContext) -> tuple[Agent, str]:
-    """Transfer user to the Clinic & Appointment Specialist (Voice: Pooja) for doctor slot bookings."""
-    specialist = ClinicAppointmentAgent(
-        chat_ctx=self.chat_ctx.copy(exclude_instructions=True)
-    )
-    return specialist, "Transferring you to our Clinic and Appointment Specialist now."
-```
-
-#### Why This Handoff Pattern Works Seamlessly:
-- **Context Inheritance**: `chat_ctx.copy(exclude_instructions=True)` passes the user's name, symptoms, and district spoken earlier directly to the specialist agent.
-- **Audible Voice Switch**: Main Agent speaks in **Anisha** (Murf Falcon); Specialist Agent speaks in **Pooja** (Murf Falcon).
-- **Visual Handoff Badge**: LiveKit data channel publishes a `handoff` payload rendering a purple **`DAY 9 HANDOFF`** card on screen!
+When a user asks to book a doctor slot, the Main Agent (voice: **Anisha**) invokes `transfer_to_clinic_specialist`. The conversation transfers seamlessly — inheriting previous caller context — while switching the voice to **Pooja** and rendering a purple **`DAY 9 HANDOFF`** card on screen!
 
 ---
 
-## ⚡ Challenges Faced & Lessons Learned
+## ⚡ Challenges Faced & Solutions
 
 1. **Eliminating Startup Latency**:
-   - *Problem*: Heavy turn-detector imports were triggering PyTorch initialization delays (~50 seconds) before registering the agent worker with LiveKit Cloud.
-   - *Fix*: Optimized plugin imports in `agent.py`, reducing worker registration speed to **under 1 second**.
+   - *Problem*: Heavy turn-detector imports were causing a 50-second startup lag before registering the worker.
+   - *Fix*: Optimized plugin imports in `agent.py`, bringing startup and worker registration down to **under 1 second**!
 
-2. **Native Script Compliance**:
-   - *Problem*: Standard LLMs often reply in Romanized Hindi ("namaste main aapki madad kar sakta hoon"), which Murf Falcon pronounces with an English accent.
-   - *Fix*: System prompt rules explicitly enforce writing in native scripts (Devanagari Hindi: नमस्ते). Murf Falcon synthesizes native script text with flawless Indian pronunciation.
-
-3. **Consent & Safety Guardrails**:
-   - Hardcoded strict guardrails forbidding disease diagnosis or prescription advice, ensuring the agent remains a safe triage assistant.
+2. **Flawless Indian Pronunciation**:
+   - *Problem*: Romanized Hindi caused TTS engines to speak with an English accent.
+   - *Fix*: Enforcing Devanagari script (हिंदी) allowed Murf Falcon to deliver authentic, natural Indian voice responses.
 
 ---
 
-## 💻 How to Run & Deploy (Step-by-Step Guide)
+## 💻 How to Run the Project
 
-### 1. Clone the Repository
 ```bash
+# 1. Clone the repo
 git clone https://github.com/Jagrati850/MURFD2.git
 cd MURFD2
-```
 
-### 2. Configure Environment Variables
-Copy `.env.example` to `.env.local` in both `backend` and `frontend` directories:
+# 2. Configure .env.local in backend and frontend
 
-**Backend (`backend/.env.local`)**:
-```env
-LIVEKIT_URL=wss://your-project.livekit.cloud
-LIVEKIT_API_KEY=your_livekit_api_key
-LIVEKIT_API_SECRET=your_livekit_api_secret
-MURF_API_KEY=your_murf_api_key
-DEEPGRAM_API_KEY=your_deepgram_api_key
-GOOGLE_API_KEY=your_gemini_api_key
-```
-
-### 3. Run Backend & Frontend
-
-**Option A: PowerShell Launcher**
-```powershell
+# 3. Start Backend & Frontend using PowerShell
 .\start_app.ps1
+
+# Or start manually:
+# Terminal 1 (Backend): cd backend && uv run python src/agent.py dev
+# Terminal 2 (Frontend): cd frontend && pnpm dev
 ```
 
-**Option B: Manual Terminals**
-```bash
-# Terminal 1: Backend Agent
-cd backend
-uv run python src/agent.py dev
-
-# Terminal 2: Frontend Next.js
-cd frontend
-pnpm install
-pnpm dev
-```
-
-Open `http://localhost:3000` to interact with your agent live!
+Open `http://localhost:3000` in your browser!
 
 ---
 
-## 🏆 Final Thoughts & Repository Link
+## 🔗 Repository & Conclusion
 
-Building a multilingual voice agent for health access demonstrated the immense power of **low-latency TTS APIs like Murf Falcon** paired with modern real-time WebRTC frameworks. Voice AI is transforming accessibility in India, allowing citizens to interact with life-saving healthcare resources in their own mother tongue.
+Building this voice agent proved how transformative **low-latency TTS APIs like Murf Falcon** are for building real-world, accessible AI solutions in India.
 
-- **GitHub Repository**: [https://github.com/Jagrati850/MURFD2.git](https://github.com/Jagrati850/MURFD2.git)
-- **Built for**: Voice for Bharat Challenge 2026 by Murf AI
+- 📦 **GitHub Repository**: [https://github.com/Jagrati850/MURFD2.git](https://github.com/Jagrati850/MURFD2.git)
+- 🎙️ **Built for**: Voice for Bharat Challenge 2026 by Murf AI
+
+*Thank you for following along on this 10-day journey!*
