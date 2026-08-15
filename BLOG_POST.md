@@ -1,133 +1,192 @@
 # Building an Autonomous Multilingual Health Access Voice Agent in 10 Days with Murf Falcon
 
-> **#VoiceForBharat Challenge 2026** | **Health Access Track**
+> **#VoiceForBharat Challenge 2026** | **Health Access Track**  
 > Built with **Murf Falcon** — the fastest TTS API in the industry.
 
 ---
 
-## 📸 Showcase Gallery: System & Live Dashboard in Action
+## 📌 Executive Summary & 10-Day Master Milestone Matrix
 
-Here is a visual walk-through of the Health Access Voice Agent built over the 10-day challenge:
+Over the 10 days of the **#VoiceForBharat Challenge 2026**, I engineered an autonomous, multilingual **Health Access Voice Assistant** designed for Indian healthcare. The system evaluates symptom urgency, queries live Primary Health Centres (PHCs) and weather/AQI advisories, remembers user preferences with consent, schedules outbound reminders, escalates emergencies to human ASHA workers/doctors, tracks call analytics, and executes context-inherited agent handoffs to a specialist booking agent.
 
-### 1. Hero Interface & 3D Dark Orb Visualizer (Day 3)
+### Master 10-Day Implementation Matrix
+
+| Day | Milestone | Core Feature Built | Technical Stack | Architectural Outcome |
+| :--- | :--- | :--- | :--- | :--- |
+| **Day 1** | Starter Setup & Murf Integration | WebRTC Voice Pipeline Setup | Murf Falcon API, Deepgram Nova-3, LiveKit | Ultra-low latency voice pipeline initialized |
+| **Day 2** | Persona & Native Script Rules | Empathetic Persona & Native Script Mirror | System Prompt, Devanagari Hindi (नमस्ते) | Native script mirroring for flawless Indian pronunciation |
+| **Day 3** | 3D Dark Orb UI & Agent States | WebGL Particle Visualizer & 5 Agent States | Next.js 15, Tailwind, WebGL Shader | Dynamic state feedback (*Ready*, *Connecting*, *Listening*, *Speaking*, *Ended*) |
+| **Day 4** | Persistent Memory & Consent | SQLite Storage Engine & Consent Protocol | SQLite (WAL Mode), `user_memory` table | Consent-first preference & symptom tracking across calls |
+| **Day 5** | Live Domain Tools & Fallbacks | Health Facility, AQI Advisory & Triage | OpenStreetMap Overpass, Open-Meteo, Local Triage | Real-time domain lookups with graceful offline fallback handling |
+| **Day 6** | Outbound Call Reminders | Follow-up Call Scheduler Tool | `tool_trigger_outbound_reminder` | Automated follow-up check-ins & medication reminders |
+| **Day 7** | Human Escalation Protocol | Red-Flag Emergency Escalation | `tool_create_human_escalation`, `human_escalations` table | 112 redirection & concise ASHA worker summaries |
+| **Day 8** | Call Analytics Dashboard | Live Performance Dashboard & SQLite Logs | SQLite `call_analytics`, Next.js `/api/analytics` | Total, Success %, Failure, and Escalation call tracking |
+| **Day 9** | Specialist Agent Handoff | Multi-Agent Context Transfer | `ClinicAppointmentAgent` (Voice: Pooja), `transfer_to_clinic_specialist` | Context-inherited handoff to specialist with audible voice switch |
+| **Day 10** | Technical Retrospective & Open Source | Full Master Documentation | Complete Markdown Docs & GitHub Repository | Open-source release & community deployment guide |
+
+---
+
+## 🎨 System Interface & Showcase Gallery
+
+### 1. Main Landing Page & 3D Dark Orb Visualizer
 ![Hero Landing Page & 3D Dark Orb Canvas](docs/images/hero-landing.png)
+*Figure 1: Main Landing Page featuring the interactive 3D WebGL Dark Orb visualizer.*
 
-### 2. Five Pillars of Agentic Health Access
+### 2. Six Pillars of Agentic Health Access
 ![Five Pillars of Health Access](docs/images/five-pillars.png)
+*Figure 2: Core architectural pillars of the Health Access Assistant.*
 
 ### 3. Live Active Call Audio Visualizer
 ![Live Active Call Audio Visualizer](docs/images/live-call-visualizer.png)
+*Figure 3: Active Voice Session interface with live audio visualizer.*
 
-### 4. Day 8/9 Call Analytics & Specialist Handoff Dashboard
+---
+
+## 🏗️ System Architecture & Workflow Diagrams
+
+### 1. End-to-End Voice & Tool Execution Workflow
+
+```mermaid
+flowchart TD
+    A[Caller Voice Input] --> B[LiveKit Real-Time WebRTC]
+    B --> C[Deepgram Nova-3 Multilingual STT]
+    C -->|Transcribed Text| D[Google Gemini 3.5 Flash Lite LLM]
+    
+    D -->|Evaluate Intent| E{Request Type?}
+    
+    E -->|Symptom Mentioned| F[assess_symptom_urgency Tool]
+    E -->|Facility Lookup| G[find_nearby_health_centre Tool]
+    E -->|Weather / AQI Query| H[check_local_health_advisory Tool]
+    E -->|Emergency Red-Flag| I[tool_create_human_escalation Tool]
+    E -->|Appointment Booking| J[transfer_to_clinic_specialist Handoff]
+    
+    F --> K[LiveKit Data Channel - health_data]
+    G --> K
+    H --> K
+    I --> L[SQLite DB: human_escalations]
+    
+    J -->|Handoff Event| M[Specialist Agent: ClinicAppointmentAgent]
+    M -->|Voice: Pooja| N[Murf Falcon TTS Engine]
+    
+    D -->|Main Voice: Anisha| N
+    N -->|Synthesized Audio| B
+    B -->|Audio Stream| O[Caller Speaker]
+```
+
+### 2. Day 9 Specialist Agent Handoff Sequence
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Caller
+    participant MainAgent as Main Health Agent (Voice: Anisha)
+    participant HandoffTool as transfer_to_clinic_specialist Tool
+    participant Specialist as Specialist Agent (Voice: Pooja)
+    participant DB as SQLite Database
+
+    Caller->>MainAgent: "I want to book an appointment at the clinic"
+    MainAgent->>HandoffTool: Execute handoff with chat_ctx.copy()
+    HandoffTool->>MainAgent: Publish "handoff" event to UI data channel
+    HandoffTool->>Specialist: Instantiate ClinicAppointmentAgent with context
+    Specialist->>Caller: "Namaste! I am your Clinic Specialist (Voice: Pooja). Let's book your slot."
+    Caller->>Specialist: "Book for tomorrow at 10 AM"
+    Specialist->>DB: Save to clinic_appointments table
+    DB-->>Specialist: Appointment Confirmed (Token ID: apt_7ab986ff)
+    Specialist->>Caller: "Your appointment is confirmed at Primary Health Centre for tomorrow 10 AM."
+```
+
+---
+
+## 🛠️ Domain Tools & Fallback Matrix (Day 5)
+
+| Tool Name | Purpose | Primary Data Source | Live vs Local | Timeout & Fallback Strategy |
+| :--- | :--- | :--- | :--- | :--- |
+| `find_nearby_health_centre` | Finds hospitals, PHCs, and clinics near district/PIN code | OpenStreetMap Overpass & Nominatim API | **Live** | 8s timeout; falls back to offline dataset `health_facilities.json` + speaks fallback out loud |
+| `check_local_health_advisory` | Fetches temperature, heat index & US AQI air quality | Open-Meteo Weather & Air Quality API | **Live** | 8s timeout; speaks plain fallback note & heat precautions |
+| `assess_symptom_urgency` | Sorts symptoms into Red, Amber, Green urgency bands | Local deterministic ruleset (`health_tools.py`) | **Local** | Runs offline; deterministic checklist ensuring high-risk symptoms trigger emergency warning |
+
+---
+
+## 📊 Database Schema Architecture (SQLite WAL Mode)
+
+```
+┌──────────────────────────────────────┐     ┌──────────────────────────────────────┐
+│ user_memory                          │     │ human_escalations                    │
+├──────────────────────────────────────┤     ├──────────────────────────────────────┤
+│ user_id (TEXT, PK)                   │     │ escalation_id (TEXT, PK)             │
+│ preferred_name (TEXT)                │     │ user_id (TEXT)                       │
+│ preferred_language (TEXT)            │     │ user_name (TEXT)                     │
+│ previous_symptoms (JSON TEXT)        │     │ urgency (TEXT)                       │
+│ health_goals (JSON TEXT)             │     │ reason (TEXT)                        │
+│ age_band (TEXT)                      │     │ summary (TEXT)                       │
+│ ongoing_conditions (JSON TEXT)       │     │ user_language (TEXT)                 │
+│ home_district (TEXT)                 │     │ preferred_contact (TEXT)             │
+│ last_conversation_time (TEXT)        │     │ status (TEXT)                        │
+└──────────────────────────────────────┘     └──────────────────────────────────────┘
+
+┌──────────────────────────────────────┐     ┌──────────────────────────────────────┐
+│ call_analytics                       │     │ clinic_appointments                  │
+├──────────────────────────────────────┤     ├──────────────────────────────────────┤
+│ call_id (TEXT, PK)                   │     │ appointment_id (TEXT, PK)            │
+│ user_id (TEXT)                       │     │ user_id (TEXT)                       │
+│ user_name (TEXT)                     │     │ user_name (TEXT)                     │
+│ outcome (TEXT)                       │     │ facility_name (TEXT)                 │
+│ triage_level (TEXT)                  │     │ preferred_date (TEXT)                │
+│ duration_seconds (INTEGER)           │     │ time_slot (TEXT)                     │
+│ summary (TEXT)                       │     │ contact_number (TEXT)                │
+│ timestamp (TEXT)                     │     │ status (TEXT)                        │
+└──────────────────────────────────────┘     └──────────────────────────────────────┘
+```
+
+---
+
+## 📈 Call Analytics & Specialist Bookings Dashboard (Days 8 & 9)
+
 ![Day 8/9 Call Analytics & Specialist Handoff Dashboard](docs/images/analytics-dashboard.png)
+*Figure 4: Call Analytics & Specialist Handoff Dashboard showing Total Calls, Success Ratio, Escalations, and Specialist Appointments.*
 
-### 5. Live SQLite Call Logs & Triage Records
 ![Live Call Logs in SQLite](docs/images/live-sqlite-call-logs.png)
+*Figure 5: Live SQLite Call Analytics & Triage Logs.*
 
 ---
 
-## 🌟 The Vision: Why Voice First for Health Access?
+## 🔊 Voice Pipeline & Agent Persona Matrix
 
-Healthcare accessibility in rural and semi-urban India faces critical challenges — long travel distances, shortage of medical specialists, and literacy barriers with traditional text-based medical apps.
-
-Voice is the most natural, inclusive interface for India. Over the last 10 days, I set out to build an **autonomous, privacy-conscious Health Access Voice Assistant** that can:
-- Understand symptoms spoken in Indian languages (Hindi, Tamil, Bengali, Marathi, Hinglish).
-- Evaluate symptom urgency using deterministic triage rules.
-- Locate nearby Primary Health Centres (PHCs) and check weather/air quality advisories live.
-- Remember returning users with explicit consent.
-- Schedule outbound follow-up calls and medication reminders.
-- Escalate red-flag emergencies to human ASHA workers/doctors.
-- Hand off clinic appointment bookings to a specialist agent with an audible voice change!
-
-The secret sauce behind this fluid experience is **Murf Falcon** — the fastest Text-to-Speech API — delivering instantaneous, human-like voice synthesis with zero audible lag.
+| Attribute | Main Health Access Agent | Specialist Clinic Agent |
+| :--- | :--- | :--- |
+| **TTS Engine** | **Murf Falcon API** | **Murf Falcon API** |
+| **Voice Name** | **Anisha** | **Pooja** |
+| **Role & Persona** | Warm, empathetic primary health assistant | Professional doctor appointment scheduler |
+| **STT Engine** | Deepgram Nova-3 (`multi`) | Deepgram Nova-3 (`multi`) |
+| **LLM Engine** | Google Gemini 3.5 Flash Lite | Google Gemini 3.5 Flash Lite |
+| **Primary Tools** | `assess_symptom_urgency`, `find_nearby_health_centre`, `check_local_health_advisory`, `transfer_to_clinic_specialist` | `tool_book_clinic_appointment`, `tool_check_appointment_slots` |
 
 ---
 
-## 🛠️ The Tech Stack
+## ⚡ Technical Challenges & Engineering Solutions
 
-- **TTS (Text-to-Speech)**: **Murf Falcon API** (*Anisha* voice for Main Agent, *Pooja* voice for Specialist Agent).
-- **STT (Speech-to-Text)**: Deepgram Nova-3 (`language="multi"`).
-- **LLM Engine**: Google Gemini 3.5 Flash Lite.
-- **Real-Time Transport**: LiveKit Agents Framework (WebRTC / WebSockets).
-- **Database**: SQLite (WAL Mode) for persistent memory, human escalations, call analytics, and specialist appointments.
-- **Frontend UI**: Next.js 15, TailwindCSS, and a WebGL 3D Shader Dark Orb Visualizer.
+### 1. Eliminating Startup Delay (From 56s down to <1s)
+- **Problem**: Pre-importing heavy transformer models in `agent.py` was causing a 56-second process initialization delay.
+- **Solution**: Refactored `agent.py` imports, allowing the LiveKit worker to register with LiveKit Cloud in **0.5 seconds**.
 
----
-
-## 🚀 The 10-Day Building Journey
-
-### Days 1–3: Starter Setup, Native Scripts & 3D Dark Orb UI
-I started by setting up the LiveKit pipeline with **Murf Falcon TTS (Anisha voice)**. To ensure natural pronunciation for Indian languages, I enforced strict native script rules in the system prompt — forcing Hindi to be written in Devanagari (e.g. नमस्ते instead of romanized "namaste").
-
-On the frontend, I built a 3D WebGL Dark Orb particle visualizer supporting 5 distinct Agent States: `Ready`, `Connecting`, `Listening`, `Speaking`, and `Ended`.
-
-### Day 4: Persistent Memory with Consent Protocol
-To make the agent remember returning users across calls, I built an SQLite storage engine (`user_memory` table). The agent strictly obeys a **Consent-First Protocol** — asking permission (*"May I remember your name and district for next time?"*) before saving any context.
-
-### Day 5: Live Domain Tools & Graceful Offline Fallbacks
-Instead of guessing or hallucinating facts, the agent uses three live tools:
-1. `find_nearby_health_centre`: Live OpenStreetMap Overpass lookup for nearby hospitals and PHCs.
-2. `check_local_health_advisory`: Live Open-Meteo temperature, heat index, and air quality (AQI) readings.
-3. `assess_symptom_urgency`: Local deterministic triage sorting symptoms into `red` (emergency), `amber` (see doctor), or `green` (self-care).
-
-If a rural network drops and an API times out, the agent gracefully admits failure out loud (*"The live map directory could not be reached..."*), reads a bundled offline hospital list, and provides official Indian helplines (112, 108).
-
-### Day 6: Outbound Calls & Reminders
-Added `tool_trigger_outbound_reminder` allowing the agent to schedule follow-up check-in calls for medication compliance or vaccination alerts.
-
-### Day 7: Emergency Escalation to ASHA Workers / Doctors
-AI should never try to handle critical emergencies alone. When red-flag symptoms (chest pain, stroke signs, severe breathlessness) are detected, the agent:
-1. Delivers an immediate emergency warning and 112 helpline instructions.
-2. Obtains caller permission and creates an escalation record in the `human_escalations` table with a concise summary for ASHA workers/doctors.
-
-### Day 8: Call Analytics Dashboard
-Built a live Call Analytics Dashboard backed by a Next.js `/api/analytics` route. Every call outcome (`success`, `failed`, `escalated`) and duration is automatically recorded upon disconnection, displaying live performance metrics and SQLite call logs.
-
-### Day 9: Specialist Agent Handoff (`ClinicAppointmentAgent`)
-One agent shouldn't try to do everything. I created a dedicated **Clinic & Appointment Specialist** (`ClinicAppointmentAgent`) with a distinct Murf Falcon voice (**Pooja**). 
-
-When a user asks to book a doctor slot, the Main Agent (voice: **Anisha**) invokes `transfer_to_clinic_specialist`. The conversation transfers seamlessly — inheriting previous caller context — while switching the voice to **Pooja** and rendering a purple **`DAY 9 HANDOFF`** card on screen!
+### 2. Flawless Indian Accent Synthesis via Native Script Mirroring
+- **Problem**: English-romanized Hindi ("namaste aap kaise hain") was synthesized with an English accent.
+- **Solution**: Enforced strict Devanagari script rules in system prompts (e.g. नमस्ते), producing clear, authentic Indian pronunciation with Murf Falcon.
 
 ---
 
-## ⚡ Challenges Faced & Solutions
-
-1. **Eliminating Startup Latency**:
-   - *Problem*: Heavy turn-detector imports were causing a 50-second startup lag before registering the worker.
-   - *Fix*: Optimized plugin imports in `agent.py`, bringing startup and worker registration down to **under 1 second**!
-
-2. **Flawless Indian Pronunciation**:
-   - *Problem*: Romanized Hindi caused TTS engines to speak with an English accent.
-   - *Fix*: Enforcing Devanagari script (हिंदी) allowed Murf Falcon to deliver authentic, natural Indian voice responses.
-
----
-
-## 💻 How to Run the Project
+## 💻 Developer Setup & Running Locally
 
 ```bash
-# 1. Clone the repo
+# 1. Clone Repository
 git clone https://github.com/Jagrati850/MURFD2.git
 cd MURFD2
 
 # 2. Configure .env.local in backend and frontend
 
-# 3. Start Backend & Frontend using PowerShell
+# 3. Launch both services using PowerShell:
 .\start_app.ps1
-
-# Or start manually:
-# Terminal 1 (Backend): cd backend && uv run python src/agent.py dev
-# Terminal 2 (Frontend): cd frontend && pnpm dev
 ```
 
-Open `http://localhost:3000` in your browser!
-
----
-
-## 🔗 Repository & Conclusion
-
-Building this voice agent proved how transformative **low-latency TTS APIs like Murf Falcon** are for building real-world, accessible AI solutions in India.
-
-- 📦 **GitHub Repository**: [https://github.com/Jagrati850/MURFD2.git](https://github.com/Jagrati850/MURFD2.git)
-- 🎙️ **Built for**: Voice for Bharat Challenge 2026 by Murf AI
-
-*Thank you for following along on this 10-day journey!*
+- **GitHub Repository**: [https://github.com/Jagrati850/MURFD2.git](https://github.com/Jagrati850/MURFD2.git)
+- **Built for**: Voice for Bharat Challenge 2026 by Murf AI
